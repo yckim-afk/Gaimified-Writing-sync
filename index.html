@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<!-- saved from url=(0246)file:///C:/Users/%EA%B9%80%EC%9C%A4%EC%B1%84/OneDrive%20-%20%EC%9D%B4%ED%99%94%EC%97%AC%EC%9E%90%EB%8C%80%ED%95%99%EA%B5%90/%EB%B0%94%ED%83%95%20%ED%99%94%EB%A9%B4/%EC%9E%91%EA%B0%80%20%EB%90%98%EA%B8%B0%20-%20Gamified%20Writing%20Sync%20Pro.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>작가 되기 - Gamified Writing Sync</title>
+    <link href="./index_files/css2" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #ec4899;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding-bottom: 80px;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Header & Stats */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 25px 20px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .level-badge {
+            background: var(--secondary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+
+        .xp-container { flex: 1; }
+
+        .xp-bar-bg {
+            background: rgba(255, 255, 255, 0.2);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .xp-bar-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .stat-item { display: flex; align-items: center; gap: 5px; }
+
+        /* Cards & Lists */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-ghost { background: #f1f5f9; color: var(--text-main); }
+        .btn-small { padding: 5px 10px; font-size: 0.8rem; }
+        .btn-round { border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 5px 25px 5px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 2px; }
+
+        /* Form Controls */
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            background: #ffffff;
+            color: var(--text-main);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 560px;
+            border-radius: var(--radius);
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #eef2ff;
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .badge-daily { background: #fef3c7; color: #92400e; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+            font-size: 24px;
+            z-index: 90;
+            cursor: pointer;
+        }
+
+        /* Story Workflow Subnav inside modal */
+        .sub-nav {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        .sub-nav-btn {
+            flex: 1;
+            white-space: nowrap;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .sub-nav-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Nested sub-cards */
+        .sub-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .reward-set {
+            display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Dash -->
+    <div id="header-container">
+        <div class="header">
+            <div class="user-profile">
+                <div class="level-badge" id="lv-display">1</div>
+                <div class="xp-container">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700;">
+                        <span>LV. <span id="lv-num">1</span> 작가 지망생</span>
+                        <span><span id="xp-current">0</span> / <span id="xp-needed">100</span> XP</span>
+                    </div>
+                    <div class="xp-bar-bg">
+                        <div class="xp-bar-fill" id="xp-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-item">💰 <span id="gold-display">100</span>G</div>
+                <div class="stat-item">🔥 <span id="streak-display">0</span>일 연속</div>
+                <div class="stat-item">🛡️ <span id="shield-display">0</span>개</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="app-content">
+        <!-- 화면 1: 홈/대시보드 -->
+        <div id="tab-home" class="tab-view hidden">
+            <div class="card">
+                <div class="card-title">오늘의 요약 📅</div>
+                <p id="home-summary">오늘의 데일리 퀘스트: 0 / 2 완료</p>
+                <div id="daily-quick-list">
+                    <div style="font-size: 0.9rem; margin-top: 5px; color: var(--text-muted)">
+                        ⬜ 매일 500자 쓰기
+                    </div>
+                
+                    <div style="font-size: 0.9rem; margin-top: 5px; color: var(--text-muted)">
+                        ⬜ 맞춤법 검사 돌리기
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="background: #fdf2f8; border-color: #fce7f3;">
+                <div class="card-title" style="color: var(--accent);">진행 중인 이야기 📖</div>
+                <div id="home-story-summary">등록된 이야기가 없습니다.</div>
+            </div>
+            <div class="card">
+                <div class="card-title">설정 및 데이터 ⚙️</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <button class="btn btn-ghost btn-small" onclick="exportData()">데이터 내보내기 (JSON)</button>
+                    <button class="btn btn-ghost btn-small" onclick="document.getElementById(&#39;import-file&#39;).click()">데이터 가져오기</button>
+                    <input type="file" id="import-file" class="hidden" onchange="importData(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- 화면 2: 퀘스트 -->
+        <div id="tab-quests" class="tab-view hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin:0">퀘스트 목록</h2>
+                <button class="btn btn-ghost btn-small" onclick="openRewardSettings()">🎁 보상 설정</button>
+            </div>
+            
+            <div style="margin-bottom: 15px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px;">
+                <button class="btn btn-ghost btn-small" onclick="filterQuests(&#39;전체&#39;)">전체</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests(&#39;작가&#39;)">✍️ 작가</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests(&#39;캐릭터&#39;)">👤 캐릭터</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests(&#39;서사&#39;)">📜 서사</button>
+            </div>
+
+            <div id="quest-list"><div class="card" style="opacity: 1;">
+                    <div class="card-title">
+                        <span>매일 500자 쓰기 <span class="badge-daily">데일리</span></span>
+                        <span style="color: var(--secondary)">B급</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">분량에 상관없이 매일 쓰는 습관</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag">#작가</span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteQuest(1)">🗑️</button>
+                            <button class="btn btn-primary btn-small" onclick="completeQuest(1)">
+                                완료 (+15XP)
+                            </button>
+                        </div>
+                    </div>
+                </div><div class="card" style="opacity: 1;">
+                    <div class="card-title">
+                        <span>캐릭터 프로필 완성 </span>
+                        <span style="color: var(--secondary)">A급</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">주인공의 심층 심리 분석</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag">#캐릭터</span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteQuest(2)">🗑️</button>
+                            <button class="btn btn-primary btn-small" onclick="completeQuest(2)">
+                                완료 (+30XP)
+                            </button>
+                        </div>
+                    </div>
+                </div><div class="card" style="opacity: 1;">
+                    <div class="card-title">
+                        <span>맞춤법 검사 돌리기 <span class="badge-daily">데일리</span></span>
+                        <span style="color: var(--secondary)">C급</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">퇴고의 기본</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag">#작가</span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteQuest(3)">🗑️</button>
+                            <button class="btn btn-primary btn-small" onclick="completeQuest(3)">
+                                완료 (+7XP)
+                            </button>
+                        </div>
+                    </div>
+                </div></div>
+        </div>
+
+        <!-- 화면 3: 상점 -->
+        <div id="tab-shop" class="tab-view hidden">
+            <h2 style="margin-bottom: 15px;">작가들의 상점</h2>
+            <div class="grid" id="shop-list">
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🛡️</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">결석 면제권</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 30px; margin: 5px 0;">스트릭이 끊기는 것을 1회 방어합니다.</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem(&#39;shield&#39;)">
+                            💰 50G 구매
+                        </button>
+                    </div>
+                
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">☕</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">스테미나 커피</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 30px; margin: 5px 0;">오늘 얻는 XP가 1.5배가 됩니다 (컨셉용)</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem(&#39;coffee&#39;)">
+                            💰 20G 구매
+                        </button>
+                    </div>
+                
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🃏</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">영감 카드</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 30px; margin: 5px 0;">랜덤한 글쓰기 주제를 제시받습니다.</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem(&#39;card&#39;)">
+                            💰 10G 구매
+                        </button>
+                    </div>
+                
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">⏳</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">마감 연장권</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 30px; margin: 5px 0;">마감에 대한 심리적 압박을 해소합니다.</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem(&#39;deadline&#39;)">
+                            💰 100G 구매
+                        </button>
+                    </div>
+                </div>
+            <h3 style="margin-top: 30px;">나의 가방</h3>
+            <div id="inventory-list" class="grid"></div>
+        </div>
+
+        <!-- 화면 4: 아이디어뱅크 -->
+        <div id="tab-ideas" class="tab-view hidden">
+            <h2 style="margin-bottom: 15px;">아이디어 뱅크</h2>
+            <input type="text" id="idea-search" placeholder="태그나 내용 검색..." onkeyup="renderIdeas()">
+            <div id="idea-list"></div>
+        </div>
+
+        <!-- 화면 5: 이야기 라이브러리 -->
+        <div id="tab-library" class="tab-view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0">이야기 라이브러리</h2>
+                <button class="btn btn-primary btn-small" onclick="openNewStoryModal()">+ 새 이야기</button>
+            </div>
+            <div id="story-list">
+                    <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                        아직 등록된 이야기가 없습니다.<br>오른쪽 상단이나 + 버튼으로 새 이야기를 만들어보세요!
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div id="fab" class="fab" onclick="handleFab()">+</div>
+
+    <!-- Navigation -->
+    <nav class="bottom-nav">
+        <a class="nav-item" onclick="switchTab(&#39;home&#39;)">
+            <span class="nav-icon">🏠</span><span>홈</span>
+        </a>
+        <a class="nav-item" onclick="switchTab(&#39;quests&#39;)">
+            <span class="nav-icon">⚔️</span><span>퀘스트</span>
+        </a>
+        <a class="nav-item" onclick="switchTab(&#39;shop&#39;)">
+            <span class="nav-icon">💰</span><span>상점</span>
+        </a>
+        <a class="nav-item" onclick="switchTab(&#39;ideas&#39;)">
+            <span class="nav-icon">💡</span><span>아이디어</span>
+        </a>
+        <a class="nav-item active" onclick="switchTab(&#39;library&#39;)">
+            <span class="nav-icon">📚</span><span>라이브러리</span>
+        </a>
+    </nav>
+
+    <!-- Modals -->
+    <div id="modal-container" class="modal hidden" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 id="modal-title" style="margin:0">등록하기</h3>
+                <button class="btn btn-ghost btn-small" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modal-body"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">닫기</button>
+                <button class="btn btn-primary" style="flex:1" id="modal-save-btn">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /** 데이터 구조 및 상태 초기화 **/
+        let state = {
+            user: {
+                level: 1, xp: 0, gold: 100, streak: 0, lastLogin: null, shields: 0
+            },
+            rewardConfig: {
+                A: { xp: 30, gold: 15 },
+                B: { xp: 15, gold: 7 },
+                C: { xp: 7, gold: 3 }
+            },
+            quests: [
+                { id: 1, title: "매일 500자 쓰기", desc: "분량에 상관없이 매일 쓰는 습관", grade: "B", category: "작가", isDaily: true, completedAt: null },
+                { id: 2, title: "캐릭터 프로필 완성", desc: "주인공의 심층 심리 분석", grade: "A", category: "캐릭터", isDaily: false, completedAt: null },
+                { id: 3, title: "맞춤법 검사 돌리기", desc: "퇴고의 기본", grade: "C", category: "작가", isDaily: true, completedAt: null }
+            ],
+            ideas: [],
+            stories: [],
+            shopItems: [
+                { id: 'shield', name: '결석 면제권', price: 50, desc: '스트릭이 끊기는 것을 1회 방어합니다.', icon: '🛡️' },
+                { id: 'coffee', name: '스테미나 커피', price: 20, desc: '오늘 얻는 XP가 1.5배가 됩니다 (컨셉용)', icon: '☕' },
+                { id: 'card', name: '영감 카드', price: 10, desc: '랜덤한 글쓰기 주제를 제시받습니다.', icon: '🃏' },
+                { id: 'deadline', name: '마감 연장권', price: 100, desc: '마감에 대한 심리적 압박을 해소합니다.', icon: '⏳' }
+            ],
+            inventory: [],
+            categories: ["작가", "캐릭터", "서사"]
+        };
+
+        let currentTab = 'library';
+        let questFilter = '전체';
+        let currentStorySubTab = 'foundation'; // 스토리 상세 서브 탭 기억용
+
+        /** 마이그레이션 로직: 구버전 호환성 확보 **/
+        function migrateStory(s) {
+            if (!s) return s;
+            if (s.theme === undefined) s.theme = "";
+            if (s.fantasy === undefined) s.fantasy = "";
+            if (!Array.isArray(s.characters)) s.characters = [];
+            if (!Array.isArray(s.relationships)) s.relationships = [];
+            if (!Array.isArray(s.arcPoints)) s.arcPoints = [];
+            if (!Array.isArray(s.episodes)) s.episodes = [];
+
+            // episodes 내 문자열 요소를 객체 템플릿으로 마이그레이션
+            s.episodes = s.episodes.map((ep, idx) => {
+                if (typeof ep === 'string') {
+                    return {
+                        id: Date.now() + idx,
+                        title: ep,
+                        goal: "",
+                        penalty: "",
+                        problem: "",
+                        solution: "",
+                        innerChange: "",
+                        relationshipChange: "",
+                        rightChoice: "",
+                        hook: "",
+                        infoStage: "예측가능",
+                        confrontationCharacterId: null
+                    };
+                }
+                return {
+                    id: ep.id || (Date.now() + idx),
+                    title: ep.title || `에피소드 ${idx + 1}`,
+                    goal: ep.goal || "",
+                    penalty: ep.penalty || "",
+                    problem: ep.problem || "",
+                    solution: ep.solution || "",
+                    innerChange: ep.innerChange || "",
+                    relationshipChange: ep.relationshipChange || "",
+                    rightChoice: ep.rightChoice || "",
+                    hook: ep.hook || "",
+                    infoStage: ep.infoStage || "예측가능",
+                    confrontationCharacterId: ep.confrontationCharacterId || null
+                };
+            });
+
+            // 캐릭터 필드 검증
+            s.characters = s.characters.map((c, idx) => ({
+                id: c.id || (Date.now() + idx),
+                name: c.name || "이름 없는 인물",
+                contradiction: c.contradiction || "",
+                avoidance: c.avoidance || "",
+                confrontation: c.confrontation || "",
+                confrontationUsed: !!c.confrontationUsed,
+                confrontationEpisodeIdx: c.confrontationEpisodeIdx || null
+            }));
+
+            // 관계 필드 검증
+            s.relationships = s.relationships.map((r, idx) => ({
+                id: r.id || (Date.now() + idx),
+                characterAId: r.characterAId || null,
+                characterBId: r.characterBId || null,
+                description: r.description || "",
+                irony: r.irony || "",
+                resolved: !!r.resolved
+            }));
+
+            // 메인 아크 필드 검증
+            s.arcPoints = s.arcPoints.map((a, idx) => ({
+                id: a.id || (Date.now() + idx),
+                label: a.label || "전환점",
+                infoStage: a.infoStage || "예측가능",
+                note: a.note || "",
+                linkedConfrontationCharacterId: a.linkedConfrontationCharacterId || null
+            }));
+
+            return s;
+        }
+
+        function migrateAllStories() {
+            if (Array.isArray(state.stories)) {
+                state.stories = state.stories.map(migrateStory);
+            }
+        }
+
+        /** 초기화 및 저장 **/
+        function init() {
+            const saved = localStorage.getItem('writer_app_data');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch(e) {
+                    console.error("데이터 파싱 오류", e);
+                }
+            }
+            migrateAllStories();
+            checkStreak();
+            renderAll();
+            // 기본 탭 표시
+            switchTab(currentTab);
+        }
+
+        function save() {
+            localStorage.setItem('writer_app_data', JSON.stringify(state));
+            updateUIStats();
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            if (state.user.lastLogin === today) return;
+
+            if (state.user.lastLogin) {
+                const lastDate = new Date(state.user.lastLogin);
+                const diffTime = Math.abs(new Date(today) - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 1) {
+                    if (state.user.shields > 0) {
+                        state.user.shields--;
+                        alert("🛡️ 면제권을 사용하여 스트릭을 유지했습니다!");
+                    } else {
+                        state.user.streak = 0;
+                        alert("🔥 스트릭이 초기화되었습니다...");
+                    }
+                }
+            }
+            
+            state.quests.forEach(q => {
+                if(q.isDaily && q.completedAt !== today) {
+                    q.completedAt = null;
+                }
+            });
+
+            state.user.lastLogin = today;
+            save();
+        }
+
+        /** UI 렌더링 **/
+        function renderAll() {
+            updateUIStats();
+            renderHome();
+            renderQuests();
+            renderShop();
+            renderIdeas();
+            renderStories();
+        }
+
+        function updateUIStats() {
+            document.getElementById('lv-display').innerText = state.user.level;
+            document.getElementById('lv-num').innerText = state.user.level;
+            document.getElementById('gold-display').innerText = state.user.gold;
+            document.getElementById('streak-display').innerText = state.user.streak;
+            document.getElementById('shield-display').innerText = state.user.shields;
+            
+            const needed = state.user.level * 100;
+            const percent = Math.min(100, (state.user.xp / needed) * 100);
+            document.getElementById('xp-current').innerText = state.user.xp;
+            document.getElementById('xp-needed').innerText = Math.round(needed);
+            document.getElementById('xp-bar').style.width = `${percent}%`;
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if(target) target.classList.remove('hidden');
+            
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            const tabOrder = ['home', 'quests', 'shop', 'ideas', 'library'];
+            const activeIndex = tabOrder.indexOf(tabId);
+            navItems.forEach((item, idx) => {
+                if (idx === activeIndex) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+            
+            if(tabId === 'home') renderHome();
+            if(tabId === 'library') renderStories();
+        }
+
+        // --- 홈 화면 ---
+        function renderHome() {
+            const today = new Date().toDateString();
+            const dailyQuests = state.quests.filter(q => q.isDaily);
+            const completed = dailyQuests.filter(q => q.completedAt === today).length;
+            
+            document.getElementById('home-summary').innerText = 
+                `오늘의 데일리 퀘스트: ${completed} / ${dailyQuests.length} 완료`;
+
+            let html = '';
+            dailyQuests.forEach(q => {
+                const isDone = q.completedAt === today;
+                html += `
+                    <div style="font-size: 0.9rem; margin-top: 5px; color: ${isDone ? 'var(--success)' : 'var(--text-muted)'}">
+                        ${isDone ? '✅' : '⬜'} ${q.title}
+                    </div>
+                `;
+            });
+            document.getElementById('daily-quick-list').innerHTML = html || '<div style="font-size:0.85rem; color:var(--text-muted)">데일리 퀘스트가 없습니다.</div>';
+
+            if(state.stories.length > 0) {
+                const s = state.stories[0];
+                const stats = calculateStoryHealth(s);
+                document.getElementById('home-story-summary').innerHTML = `
+                    <strong>${s.title}</strong>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin: 3px 0;">${s.logline || '로그라인 미등록'}</div>
+                    <div style="font-size: 0.75rem; color: var(--primary); margin-top: 6px;">
+                        📌 회차 ${s.episodes.length}개 · 미소모 대면 ${stats.unconsumedConfrontations}개 · 훅 누락 ${stats.emptyHooks}개
+                    </div>
+                `;
+            } else {
+                document.getElementById('home-story-summary').innerText = "등록된 이야기가 없습니다.";
+            }
+        }
+
+        // --- 퀘스트 화면 ---
+        function filterQuests(cat) {
+            questFilter = cat;
+            renderQuests();
+        }
+
+        function renderQuests() {
+            const list = document.getElementById('quest-list');
+            list.innerHTML = '';
+            const today = new Date().toDateString();
+
+            state.quests.forEach(q => {
+                if (questFilter !== '전체' && q.category !== questFilter) return;
+
+                const isDone = q.completedAt === today || (!q.isDaily && q.completedAt);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.opacity = isDone ? '0.6' : '1';
+                
+                card.innerHTML = `
+                    <div class="card-title">
+                        <span>${q.title} ${q.isDaily ? '<span class="badge-daily">데일리</span>' : ''}</span>
+                        <span style="color: var(--secondary)">${q.grade}급</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">${q.desc}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag">#${q.category}</span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteQuest(${q.id})">🗑️</button>
+                            <button class="btn ${isDone ? 'btn-ghost' : 'btn-primary'} btn-small" 
+                                onclick="completeQuest(${q.id})" ${isDone ? 'disabled' : ''}>
+                                ${isDone ? '완료됨' : '완료 (+'+state.rewardConfig[q.grade].xp+'XP)'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function completeQuest(id) {
+            const quest = state.quests.find(q => q.id === id);
+            const reward = state.rewardConfig[quest.grade];
+            
+            state.user.xp += reward.xp;
+            state.user.gold += reward.gold;
+            quest.completedAt = new Date().toDateString();
+
+            const daily = state.quests.filter(q => q.isDaily);
+            if (daily.length > 0 && daily.every(q => q.completedAt === new Date().toDateString())) {
+                state.user.streak++;
+            }
+
+            const needed = state.user.level * 100;
+            if (state.user.xp >= needed) {
+                state.user.level++;
+                state.user.xp -= needed;
+                alert(`🎉 축하합니다! 레벨 ${state.user.level}(으)로 승급하셨습니다!`);
+            }
+
+            save();
+            renderAll();
+        }
+
+        // --- 상점 화면 ---
+        function renderShop() {
+            const list = document.getElementById('shop-list');
+            list.innerHTML = '';
+            state.shopItems.forEach(item => {
+                list.innerHTML += `
+                    <div class="card" style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">${item.icon}</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">${item.name}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 30px; margin: 5px 0;">${item.desc}</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem('${item.id}')">
+                            💰 ${item.price}G 구매
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function buyItem(id) {
+            const item = state.shopItems.find(i => i.id === id);
+            if (state.user.gold >= item.price) {
+                state.user.gold -= item.price;
+                if (id === 'shield') {
+                    state.user.shields++;
+                } else {
+                    state.inventory.push({ ...item, uid: Date.now() });
+                }
+                save();
+                renderAll();
+                alert(`${item.name}을(를) 구매했습니다!`);
+            } else {
+                alert("골드가 부족합니다!");
+            }
+        }
+
+        // --- 아이디어 뱅크 ---
+        function renderIdeas() {
+            const list = document.getElementById('idea-list');
+            const search = document.getElementById('idea-search').value.toLowerCase();
+            list.innerHTML = '';
+            
+            state.ideas.forEach(idea => {
+                if (search && !idea.content.toLowerCase().includes(search) && !idea.tags.some(t => t.toLowerCase().includes(search))) return;
+                
+                const proj = state.stories.find(s => s.id == idea.projectId);
+                list.innerHTML += `
+                    <div class="card">
+                        <div style="white-space: pre-wrap; margin-bottom: 10px;">${idea.content}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                ${idea.tags.map(t => `<span class="tag">#${t}</span>`).join('')}
+                                ${proj ? `<span class="tag" style="background:#fff1f2; color:#be123c;">📖 ${proj.title}</span>` : ''}
+                            </div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteIdea(${idea.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ==========================================
+        //  이야기 라이브러리 (Story Library 전면 개편)
+        // ==========================================
+
+        // 정합성 계산 함수
+        function calculateStoryHealth(story) {
+            const unconsumedConfrontations = (story.characters || []).filter(c => !c.confrontationUsed).length;
+            const unresolvedIronies = (story.relationships || []).filter(r => !r.resolved).length;
+            
+            const episodes = story.episodes || [];
+            const last3 = episodes.slice(-3);
+            const emptyHooks = last3.filter(e => !e.hook || !e.hook.trim()).length;
+            
+            const innerFilledCount = episodes.filter(e => e.innerChange && e.innerChange.trim()).length;
+            const innerRatio = episodes.length > 0 ? Math.round((innerFilledCount / episodes.length) * 100) : 0;
+
+            return {
+                unconsumedConfrontations,
+                unresolvedIronies,
+                emptyHooks,
+                innerRatio
+            };
+        }
+
+        function renderStories() {
+            const list = document.getElementById('story-list');
+            list.innerHTML = '';
+
+            if (state.stories.length === 0) {
+                list.innerHTML = `
+                    <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                        아직 등록된 이야기가 없습니다.<br>오른쪽 상단이나 + 버튼으로 새 이야기를 만들어보세요!
+                    </div>
+                `;
+                return;
+            }
+
+            state.stories.forEach(story => {
+                const health = calculateStoryHealth(story);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.cursor = 'pointer';
+                card.onclick = () => viewStoryDetail(story.id);
+
+                card.innerHTML = `
+                    <div class="card-title">
+                        <span>${story.title}</span>
+                        <span class="tag">${story.status}</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">
+                        ${story.logline || '로그라인이 아직 없습니다.'}
+                    </div>
+                    ${story.theme ? `<div style="font-size: 0.8rem; margin-bottom: 8px; color: var(--primary-dark);">🎯 <strong>테마:</strong> ${story.theme}</div>` : ''}
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.75rem; margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+                        <span class="tag">인물 ${story.characters.length}명</span>
+                        <span class="tag">회차 ${story.episodes.length}화</span>
+                        <span class="tag" style="background:${health.unconsumedConfrontations > 0 ? '#fef3c7' : '#ecfdf5'}; color:${health.unconsumedConfrontations > 0 ? '#b45309' : '#15803d'};">
+                            대면 미소모: ${health.unconsumedConfrontations}
+                        </span>
+                        <span class="tag" style="background:${health.emptyHooks > 0 ? '#fee2e2' : '#f1f5f9'}; color:${health.emptyHooks > 0 ? '#b91c1c' : '#475569'};">
+                            최근 훅 누락: ${health.emptyHooks}
+                        </span>
+                        <span class="tag">내적변화 추적: ${health.innerRatio}%</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // 스토리 상세 모달 열기
+        function viewStoryDetail(id, subTab = 'foundation') {
+            currentStorySubTab = subTab;
+            const s = state.stories.find(x => x.id == id);
+            if (!s) return;
+            migrateStory(s);
+
+            const health = calculateStoryHealth(s);
+
+            const bodyHtml = `
+                <!-- 요약 헤더 (정합성 자동 요약 패널) -->
+                <div class="sub-card" style="background:#eef2ff; border-color:#c7d2fe; margin-bottom:15px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <strong style="font-size:0.85rem; color:var(--primary-dark);">📊 서사 정합성 체크리스트</strong>
+                        <span class="tag" style="background:white;">${s.status}</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.75rem;">
+                        <div>• 미소모 대면 카드: <strong>${health.unconsumedConfrontations}개</strong></div>
+                        <div>• 미해결 관계 모순: <strong>${health.unresolvedIronies}개</strong></div>
+                        <div>• 최근 3화 훅 누락: <strong style="color:${health.emptyHooks > 0 ? 'var(--danger)' : 'inherit'}">${health.emptyHooks}건</strong></div>
+                        <div>• 캐릭터 변화 추적률: <strong>${health.innerRatio}%</strong></div>
+                    </div>
+                </div>
+
+                <!-- 단계형 서브 탭 -->
+                <div class="sub-nav">
+                    <button class="sub-nav-btn ${subTab === 'foundation' ? 'active' : ''}" onclick="viewStoryDetail(${s.id}, 'foundation')">1. 토대 (테마·인물)</button>
+                    <button class="sub-nav-btn ${subTab === 'arc' ? 'active' : ''}" onclick="viewStoryDetail(${s.id}, 'arc')">2. 메인 아크</button>
+                    <button class="sub-nav-btn ${subTab === 'episodes' ? 'active' : ''}" onclick="viewStoryDetail(${s.id}, 'episodes')">3. 회차 (${s.episodes.length})</button>
+                </div>
+
+                <!-- 서브 탭 뷰 렌더링 영역 -->
+                <div id="story-subview-content">
+                    ${renderStorySubTabContent(s, subTab)}
+                </div>
+
+                <div style="margin-top:20px; padding-top:10px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn btn-ghost btn-small" style="color:var(--danger)" onclick="deleteStory(${s.id})">이 이야기 삭제</button>
+                    <span style="font-size:0.75rem; color:var(--text-muted)">변경사항은 입력 즉시 자동 저장됩니다</span>
+                </div>
+            `;
+
+            openModal(`📖 ${s.title}`, bodyHtml, () => {
+                save();
+                renderStories();
+                closeModal();
+            });
+        }
+
+        function renderStorySubTabContent(s, tab) {
+            if (tab === 'foundation') {
+                return `
+                    <!-- 기본 정보 -->
+                    <div style="margin-bottom:15px;">
+                        <label>작품 제목</label>
+                        <input type="text" value="${s.title}" oninput="updateStoryField(${s.id}, 'title', this.value)">
+                        
+                        <label>진행 상태</label>
+                        <select onchange="updateStoryField(${s.id}, 'status', this.value)">
+                            <option ${s.status === '구상 중' ? 'selected' : ''}>구상 중</option>
+                            <option ${s.status === '집필 중' ? 'selected' : ''}>집필 중</option>
+                            <option ${s.status === '완결' ? 'selected' : ''}>완결</option>
+                        </select>
+
+                        <label>한 줄 로그라인</label>
+                        <input type="text" value="${s.logline || ''}" placeholder="어떤 주인공이 무엇을 극복하고 성취하는가" oninput="updateStoryField(${s.id}, 'logline', this.value)">
+
+                        <label>메인 테마 (독자의 로망을 건드리는 핵심 질문/메시지)</label>
+                        <input type="text" value="${s.theme || ''}" placeholder="예: 구원은 타인이 아닌 자신의 선택에서 시작된다" oninput="updateStoryField(${s.id}, 'theme', this.value)">
+
+                        <label>독자 로망 정의</label>
+                        <input type="text" value="${s.fantasy || ''}" placeholder="예: 평범했던 소년이 모두에게 인정받는 최고의 전략가가 되는 카타르시스" oninput="updateStoryField(${s.id}, 'fantasy', this.value)">
+
+                        <label>줄거리 요약</label>
+                        <textarea rows="3" placeholder="전체 줄거리 흐름 요약" oninput="updateStoryField(${s.id}, 'plot', this.value)">${s.plot || ''}</textarea>
+                    </div>
+
+                    <!-- 캐릭터 목록 -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:8px;">
+                        <h4 style="margin:0">👤 캐릭터 프로필 & 대면 카드</h4>
+                        <button class="btn btn-ghost btn-small" onclick="addCharacter(${s.id})">+ 인물 추가</button>
+                    </div>
+
+                    <div id="character-list">
+                        ${s.characters.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">등록된 캐릭터가 없습니다. 인물을 추가해 보세요.</div>' : ''}
+                        ${s.characters.map((c, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>#${idx + 1} 인물</strong>
+                                    <div>
+                                        <button class="btn btn-ghost btn-small" onclick="removeCharacter(${s.id}, ${c.id})">🗑️</button>
+                                    </div>
+                                </div>
+                                <label>이름</label>
+                                <input type="text" value="${c.name || ''}" placeholder="캐릭터 이름" oninput="updateCharacter(${s.id}, ${c.id}, 'name', this.value)">
+                                
+                                <label>캐릭터 모순 (갭모에 / 결핍 / 트라우마)</label>
+                                <input type="text" value="${c.contradiction || ''}" placeholder="예: 무자비한 암살자이지만 어린아이의 울음소리엔 손이 떨린다" oninput="updateCharacter(${s.id}, ${c.id}, 'contradiction', this.value)">
+                                
+                                <label>가장 피하고 싶어하는 것 (회피/의존 정체성)</label>
+                                <input type="text" value="${c.avoidance || ''}" placeholder="예: 남과의 충돌, 타인에게 미움받는 것" oninput="updateCharacter(${s.id}, ${c.id}, 'avoidance', this.value)">
+                                
+                                <label style="color:var(--accent);">→ 반드시 대면해야 할 상황 (대면 카드)</label>
+                                <textarea rows="2" placeholder="예: 가장 소중한 친구를 지키기 위해 정면으로 싸워야만 하는 극한의 순간" oninput="updateCharacter(${s.id}, ${c.id}, 'confrontation', this.value)">${c.confrontation || ''}</textarea>
+
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; background:white; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    <span style="font-size:0.8rem;">대면 카드 소모 여부</span>
+                                    <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                        <input type="checkbox" style="width:auto; margin:0;" ${c.confrontationUsed ? 'checked' : ''} onchange="updateCharacter(${s.id}, ${c.id}, 'confrontationUsed', this.checked)">
+                                        <span class="tag" style="background:${c.confrontationUsed ? '#dcfce7' : '#fee2e2'}; color:${c.confrontationUsed ? '#166534' : '#991b1b'};">
+                                            ${c.confrontationUsed ? '소모 완료 (각성/변화)' : '미소모 (온존)'}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 관계 목록 -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; margin-bottom:8px;">
+                        <h4 style="margin:0">🔗 인물 관계 & 모순적 아이러니</h4>
+                        <button class="btn btn-ghost btn-small" onclick="addRelationship(${s.id})">+ 관계 추가</button>
+                    </div>
+
+                    <div id="relationship-list">
+                        ${s.relationships.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">등록된 관계가 없습니다.</div>' : ''}
+                        ${s.relationships.map((r, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>관계 #${idx + 1}</strong>
+                                    <button class="btn btn-ghost btn-small" onclick="removeRelationship(${s.id}, ${r.id})">🗑️</button>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>인물 A</label>
+                                        <select onchange="updateRelationship(${s.id}, ${r.id}, 'characterAId', this.value)">
+                                            <option value="">선택</option>
+                                            ${s.characters.map(c => `<option value="${c.id}" ${r.characterAId == c.id ? 'selected' : ''}>${c.name || '미정'}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>인물 B</label>
+                                        <select onchange="updateRelationship(${s.id}, ${r.id}, 'characterBId', this.value)">
+                                            <option value="">선택</option>
+                                            ${s.characters.map(c => `<option value="${c.id}" ${r.characterBId == c.id ? 'selected' : ''}>${c.name || '미정'}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <label>관계 설명</label>
+                                <input type="text" value="${r.description || ''}" placeholder="예: 오랜 스승과 제자, 애증의 라이벌" oninput="updateRelationship(${s.id}, ${r.id}, 'description', this.value)">
+
+                                <label style="color:var(--accent);">발동될 치명적 모순 (아이러니)</label>
+                                <textarea rows="2" placeholder="예: 제자가 스승의 뜻을 이루기 위해 반드시 스승을 베어야 함" oninput="updateRelationship(${s.id}, ${r.id}, 'irony', this.value)">${r.irony || ''}</textarea>
+
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; background:white; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    <span style="font-size:0.8rem;">아이러니 발동/해소 여부</span>
+                                    <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                        <input type="checkbox" style="width:auto; margin:0;" ${r.resolved ? 'checked' : ''} onchange="updateRelationship(${s.id}, ${r.id}, 'resolved', this.checked)">
+                                        <span class="tag" style="background:${r.resolved ? '#dcfce7' : '#fef3c7'}; color:${r.resolved ? '#166534' : '#92400e'};">
+                                            ${r.resolved ? '발동/해소됨' : '미발동'}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (tab === 'arc') {
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0">📜 전환점 & 정보 공개 사다리</h4>
+                        <button class="btn btn-ghost btn-small" onclick="addArcPoint(${s.id})">+ 전환점 추가</button>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">
+                        독자의 기대를 <strong>예측가능 → 예측붕괴 → 재해석</strong>으로 이끌고, 설계된 대면 카드를 적재적소에 배치하세요.
+                    </p>
+
+                    <div id="arc-point-list">
+                        ${s.arcPoints.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">등록된 메인 아크 지점이 없습니다. 기승전결 전환점을 추가해보세요.</div>' : ''}
+                        ${s.arcPoints.map((arc, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <span class="tag" style="background:var(--primary); color:white;">전환점 #${idx + 1}</span>
+                                    <button class="btn btn-ghost btn-small" onclick="removeArcPoint(${s.id}, ${arc.id})">🗑️</button>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>구간 라벨</label>
+                                        <input type="text" value="${arc.label || ''}" placeholder="기 / 승 / 전 / 결 등" oninput="updateArcPoint(${s.id}, ${arc.id}, 'label', this.value)">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>정보 공개 단계</label>
+                                        <select onchange="updateArcPoint(${s.id}, ${arc.id}, 'infoStage', this.value)">
+                                            <option ${arc.infoStage === '예측가능' ? 'selected' : ''}>예측가능</option>
+                                            <option ${arc.infoStage === '예측붕괴' ? 'selected' : ''}>예측붕괴</option>
+                                            <option ${arc.infoStage === '재해석' ? 'selected' : ''}>재해석</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <label>이 지점에서 일어나는 사건</label>
+                                <textarea rows="2" placeholder="독자의 상식을 뒤엎는 핵심 사건" oninput="updateArcPoint(${s.id}, ${arc.id}, 'note', this.value)">${arc.note || ''}</textarea>
+
+                                <label>발동되는 캐릭터 대면 카드</label>
+                                <select onchange="updateArcPoint(${s.id}, ${arc.id}, 'linkedConfrontationCharacterId', this.value)">
+                                    <option value="">연계 대면 카드 없음</option>
+                                    ${s.characters.map(c => `
+                                        <option value="${c.id}" ${arc.linkedConfrontationCharacterId == c.id ? 'selected' : ''}>
+                                            ${c.name}: ${c.confrontation ? c.confrontation.substring(0, 20) + '...' : '대면 카드'}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (tab === 'episodes') {
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0">🎬 회차별 템플릿 목록</h4>
+                        <button class="btn btn-primary btn-small" onclick="addEpisodeItem(${s.id})">+ 회차 추가</button>
+                    </div>
+
+                    <div id="episodes-container">
+                        ${s.episodes.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">에피소드가 없습니다. 첫 회차를 추가해 글을 전개해 보세요!</div>' : ''}
+                        ${s.episodes.map((ep, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>제 ${idx + 1}화</strong>
+                                    <div>
+                                        <button class="btn btn-ghost btn-small" onclick="removeEpisodeItem(${s.id}, ${ep.id})">🗑️</button>
+                                    </div>
+                                </div>
+
+                                <label>소제목</label>
+                                <input type="text" value="${ep.title || ''}" placeholder="회차 제목" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'title', this.value)">
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>이번 화 목표</label>
+                                        <input type="text" value="${ep.goal || ''}" placeholder="주인공의 즉각적 목표" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'goal', this.value)">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>실패 시 패널티</label>
+                                        <input type="text" value="${ep.penalty || ''}" placeholder="놓칠 경우 치를 대가" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'penalty', this.value)">
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>봉착한 문제</label>
+                                        <textarea rows="2" placeholder="작은 갈등과 장애물" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'problem', this.value)">${ep.problem || ''}</textarea>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>해결 (캐릭터성 반영)</label>
+                                        <textarea rows="2" placeholder="캐릭터만의 방식으로 돌파" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'solution', this.value)">${ep.solution || ''}</textarea>
+                                    </div>
+                                </div>
+
+                                <label>내적 변화 (이 해결이 심리에 미친 영향)</label>
+                                <input type="text" value="${ep.innerChange || ''}" placeholder="가치관의 균열, 자각 등" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'innerChange', this.value)">
+
+                                <label>관계 변화</label>
+                                <input type="text" value="${ep.relationshipChange || ''}" placeholder="인물 간 신뢰도, 거리감 변화" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'relationshipChange', this.value)">
+
+                                <label>옳은 선택 (역경 속 결단)</label>
+                                <input type="text" value="${ep.rightChoice || ''}" placeholder="손해를 감수하고도 내린 올바른 결정" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'rightChoice', this.value)">
+
+                                <label style="color:var(--accent);">마무리 훅 (다음 화를 누르게 할 미해결 질문)</label>
+                                <input type="text" value="${ep.hook || ''}" placeholder="예: 방 한구석에서 발견된 피 묻은 편지의 정체는?" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'hook', this.value)">
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>정보공개 사다리</label>
+                                        <select onchange="updateEpisodeField(${s.id}, ${ep.id}, 'infoStage', this.value)">
+                                            <option value="예측가능" ${ep.infoStage === '예측가능' ? 'selected' : ''}>예측가능</option>
+                                            <option value="예측붕괴" ${ep.infoStage === '예측붕괴' ? 'selected' : ''}>예측붕괴</option>
+                                            <option value="재해석" ${ep.infoStage === '재해석' ? 'selected' : ''}>재해석</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>발동된 대면 카드</label>
+                                        <select onchange="updateEpisodeConfrontation(${s.id}, ${ep.id}, this.value)">
+                                            <option value="">선택 안 함</option>
+                                            ${s.characters.map(c => `
+                                                <option value="${c.id}" ${ep.confrontationCharacterId == c.id ? 'selected' : ''}>
+                                                    ${c.name}의 대면
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // --- 세부 업데이트 및 데이터 조작 핸들러 ---
+        function updateStoryField(id, field, val) {
+            const s = state.stories.find(x => x.id == id);
+            if (!s) return;
+            s[field] = val;
+            save();
+            renderHome();
+        }
+
+        function addCharacter(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.characters.push({
+                id: Date.now(),
+                name: "",
+                contradiction: "",
+                avoidance: "",
+                confrontation: "",
+                confrontationUsed: false,
+                confrontationEpisodeIdx: null
+            });
+            save();
+            viewStoryDetail(storyId, 'foundation');
+        }
+
+        function updateCharacter(storyId, charId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const c = s.characters.find(item => item.id == charId);
+            if (!c) return;
+            c[field] = val;
+            save();
+        }
+
+        function removeCharacter(storyId, charId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.characters = s.characters.filter(c => c.id != charId);
+            // 연관된 관계 및 에피소드 연결 해제
+            s.relationships = s.relationships.filter(r => r.characterAId != charId && r.characterBId != charId);
+            s.episodes.forEach(ep => {
+                if (ep.confrontationCharacterId == charId) ep.confrontationCharacterId = null;
+            });
+            save();
+            viewStoryDetail(storyId, 'foundation');
+        }
+
+        function addRelationship(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.relationships.push({
+                id: Date.now(),
+                characterAId: s.characters[0] ? s.characters[0].id : null,
+                characterBId: s.characters[1] ? s.characters[1].id : null,
+                description: "",
+                irony: "",
+                resolved: false
+            });
+            save();
+            viewStoryDetail(storyId, 'foundation');
+        }
+
+        function updateRelationship(storyId, relId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const r = s.relationships.find(item => item.id == relId);
+            if (!r) return;
+            r[field] = val;
+            save();
+        }
+
+        function removeRelationship(storyId, relId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.relationships = s.relationships.filter(r => r.id != relId);
+            save();
+            viewStoryDetail(storyId, 'foundation');
+        }
+
+        function addArcPoint(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.arcPoints.push({
+                id: Date.now(),
+                label: "전환점",
+                infoStage: "예측붕괴",
+                note: "",
+                linkedConfrontationCharacterId: null
+            });
+            save();
+            viewStoryDetail(storyId, 'arc');
+        }
+
+        function updateArcPoint(storyId, arcId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const a = s.arcPoints.find(item => item.id == arcId);
+            if (!a) return;
+            a[field] = val;
+            save();
+        }
+
+        function removeArcPoint(storyId, arcId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.arcPoints = s.arcPoints.filter(a => a.id != arcId);
+            save();
+            viewStoryDetail(storyId, 'arc');
+        }
+
+        function addEpisodeItem(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.episodes.push({
+                id: Date.now(),
+                title: `제 ${s.episodes.length + 1}화`,
+                goal: "",
+                penalty: "",
+                problem: "",
+                solution: "",
+                innerChange: "",
+                relationshipChange: "",
+                rightChoice: "",
+                hook: "",
+                infoStage: "예측가능",
+                confrontationCharacterId: null
+            });
+            save();
+            viewStoryDetail(storyId, 'episodes');
+        }
+
+        function updateEpisodeField(storyId, epId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const ep = s.episodes.find(item => item.id == epId);
+            if (!ep) return;
+            ep[field] = val;
+            save();
+        }
+
+        function updateEpisodeConfrontation(storyId, epId, charId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const ep = s.episodes.find(item => item.id == epId);
+            if (!ep) return;
+            ep.confrontationCharacterId = charId || null;
+
+            // 해당 캐릭터의 대면 카드가 소모되었음을 자동 체크 보조
+            if (charId) {
+                const c = s.characters.find(item => item.id == charId);
+                if (c) {
+                    c.confrontationUsed = true;
+                    c.confrontationEpisodeIdx = s.episodes.indexOf(ep) + 1;
+                }
+            }
+            save();
+        }
+
+        function removeEpisodeItem(storyId, epId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.episodes = s.episodes.filter(ep => ep.id != epId);
+            save();
+            viewStoryDetail(storyId, 'episodes');
+        }
+
+        function openNewStoryModal() {
+            openModal('새 이야기 만들기', `
+                <label>이야기 제목</label>
+                <input type="text" id="s-title" placeholder="작품 제목">
+                <label>한 줄 로그라인</label>
+                <input type="text" id="s-logline" placeholder="주인공이 마주한 결핍과 목표">
+                <label>메인 테마 / 독자 로망</label>
+                <input type="text" id="s-theme" placeholder="예: 구원과 성장 / 최고의 전문가가 되는 쾌감">
+                <label>전체 줄거리 요약</label>
+                <textarea id="s-plot" placeholder="전체 줄거리 요약" rows="3"></textarea>
+            `, saveNewStory);
+        }
+
+        function saveNewStory() {
+            const titleInput = document.getElementById('s-title');
+            if (!titleInput.value.trim()) {
+                alert("제목을 입력해 주세요.");
+                return;
+            }
+            const s = {
+                id: Date.now(),
+                title: titleInput.value.trim(),
+                logline: document.getElementById('s-logline').value.trim(),
+                theme: document.getElementById('s-theme').value.trim(),
+                fantasy: "",
+                plot: document.getElementById('s-plot').value.trim(),
+                status: '구상 중',
+                characters: [],
+                relationships: [],
+                arcPoints: [],
+                episodes: []
+            };
+            state.stories.push(s);
+            save();
+            renderStories();
+            renderHome();
+            closeModal();
+            viewStoryDetail(s.id, 'foundation');
+        }
+
+        function deleteStory(id) {
+            if(confirm('이야기를 삭제하면 복구할 수 없습니다. 계속하시겠습니까?')) {
+                state.stories = state.stories.filter(s => s.id != id);
+                save();
+                renderStories();
+                renderHome();
+                closeModal();
+            }
+        }
+
+        /** FAB & 기타 공통 모달 **/
+        function handleFab() {
+            if (currentTab === 'quests') {
+                openModal('새 퀘스트 추가', `
+                    <input type="text" id="q-title" placeholder="퀘스트 제목">
+                    <textarea id="q-desc" placeholder="상세 내용"></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <select id="q-grade" style="flex:1">
+                            <option value="A">A급 (고보상)</option>
+                            <option value="B" selected>B급 (보통)</option>
+                            <option value="C">C급 (저보상)</option>
+                        </select>
+                        <select id="q-cat" style="flex:1">
+                            ${state.categories.map(c => `<option>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="q-daily" style="width:auto"> 데일리 퀘스트 (매일 반복)
+                    </label>
+                `, saveQuest);
+            } else if (currentTab === 'ideas') {
+                openModal('새 아이디어 기록', `
+                    <textarea id="i-content" placeholder="아이디어를 자유롭게 적으세요..." rows="5"></textarea>
+                    <input type="text" id="i-tags" placeholder="태그 (쉼표로 구분)">
+                    <select id="i-project">
+                        <option value="">연결할 이야기 선택 (선택 안 함)</option>
+                        ${state.stories.map(s => `<option value="${s.id}">${s.title}</option>`).join('')}
+                    </select>
+                `, saveIdea);
+            } else {
+                openNewStoryModal();
+            }
+        }
+
+        function saveQuest() {
+            const title = document.getElementById('q-title').value.trim();
+            if(!title) return;
+            const q = {
+                id: Date.now(),
+                title: title,
+                desc: document.getElementById('q-desc').value,
+                grade: document.getElementById('q-grade').value,
+                category: document.getElementById('q-cat').value,
+                isDaily: document.getElementById('q-daily').checked,
+                completedAt: null
+            };
+            state.quests.push(q);
+            save(); renderQuests(); closeModal();
+        }
+
+        function saveIdea() {
+            const content = document.getElementById('i-content').value.trim();
+            if(!content) return;
+            const i = {
+                id: Date.now(),
+                content: content,
+                tags: document.getElementById('i-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+                projectId: document.getElementById('i-project').value
+            };
+            state.ideas.push(i);
+            save(); renderIdeas(); closeModal();
+        }
+
+        function openRewardSettings() {
+            openModal('등급별 보상 설정', `
+                <p style="font-size:0.8rem; color:var(--text-muted);">등급별로 획득할 XP와 골드를 설정합니다.</p>
+                ${['A', 'B', 'C'].map(g => `
+                    <div class="reward-set">
+                        <strong>${g}등급:</strong>
+                        XP <input type="number" id="reward-${g}-xp" value="${state.rewardConfig[g].xp}" style="width:70px; margin:0">
+                        Gold <input type="number" id="reward-${g}-gold" value="${state.rewardConfig[g].gold}" style="width:70px; margin:0">
+                    </div>
+                `).join('')}
+            `, () => {
+                ['A', 'B', 'C'].forEach(g => {
+                    state.rewardConfig[g].xp = parseInt(document.getElementById(`reward-${g}-xp`).value) || 0;
+                    state.rewardConfig[g].gold = parseInt(document.getElementById(`reward-${g}-gold`).value) || 0;
+                });
+                save(); renderQuests(); closeModal();
+            });
+        }
+
+        function deleteQuest(id) { if(confirm('퀘스트를 삭제할까요?')) { state.quests = state.quests.filter(q => q.id != id); save(); renderQuests(); } }
+        function deleteIdea(id) { if(confirm('아이디어를 삭제할까요?')) { state.ideas = state.ideas.filter(i => i.id != id); save(); renderIdeas(); } }
+
+        function openModal(title, body, onSave) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = body;
+            const saveBtn = document.getElementById('modal-save-btn');
+            if (onSave) {
+                saveBtn.style.display = 'block';
+                saveBtn.onclick = onSave;
+            } else {
+                saveBtn.style.display = 'none';
+            }
+            document.getElementById('modal-container').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-container').classList.add('hidden');
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "writer_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    state = imported;
+                    migrateAllStories();
+                    save();
+                    location.reload();
+                } catch (err) {
+                    alert("잘못된 파일 형식입니다.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 초기 구동
+        init();
+    </script>
+
+</body></html>
