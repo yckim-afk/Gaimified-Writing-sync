@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>작가 되기 - Gamified Writing Sync Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #ec4899;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Header & Stats */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 22px 20px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 14px;
+        }
+
+        .level-badge {
+            background: var(--secondary);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.15rem;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            flex-shrink: 0;
+        }
+
+        .xp-container { flex: 1; }
+
+        .xp-bar-bg {
+            background: rgba(255, 255, 255, 0.22);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .xp-bar-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-item { display: flex; align-items: center; gap: 4px; }
+
+        /* Cards & Lists */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-ghost { background: #f1f5f9; color: var(--text-main); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-small { padding: 5px 10px; font-size: 0.78rem; border-radius: 7px; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 4px 20px 4px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 1.3rem; margin-bottom: 2px; }
+
+        /* Form Controls & Auto-expanding textarea */
+        input, select {
+            width: 100%;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text-main);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text-main);
+            resize: none;
+            overflow: hidden;
+            display: block;
+            min-height: 54px;
+            line-height: 1.5;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Modal (최대 너비 720px로 확장) */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 14px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 720px;
+            border-radius: var(--radius);
+            padding: 20px;
+            max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2);
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #eef2ff;
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .badge-daily {
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.68rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 85px;
+            right: 18px;
+            width: 52px;
+            height: 52px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(236, 72, 153, 0.45);
+            font-size: 26px;
+            z-index: 90;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Sub Navigation Tabs */
+        .sub-nav {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+        }
+
+        .sub-nav-btn {
+            flex: 1;
+            white-space: nowrap;
+            padding: 8px 12px;
+            border-radius: 7px;
+            border: none;
+            background: transparent;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .sub-nav-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* Nested sub-cards */
+        .sub-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 13px;
+            margin-bottom: 12px;
+        }
+
+        /* Accordion / Foldable Guide */
+        details.guide-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            font-size: 0.78rem;
+        }
+
+        details.guide-box summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--primary-dark);
+            outline: none;
+        }
+
+        details.guide-box p {
+            margin: 6px 0 2px 0;
+            color: #475569;
+            line-height: 1.45;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(30px);
+            background: rgba(15, 23, 42, 0.92);
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .reward-set {
+            display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+            margin: 6px 0 12px 0;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Stats Dash -->
+    <div id="header-container">
+        <div class="header">
+            <div class="user-profile">
+                <div class="level-badge" id="lv-display">1</div>
+                <div class="xp-container">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700;">
+                        <span>LV. <span id="lv-num">1</span> 작가</span>
+                        <span><span id="xp-current">0</span> / <span id="xp-needed">100</span> XP</span>
+                    </div>
+                    <div class="xp-bar-bg">
+                        <div class="xp-bar-fill" id="xp-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-item">💰 <span id="gold-display">100</span>G</div>
+                <div class="stat-item">🔥 <span id="streak-display">0</span>일 연속</div>
+                <div class="stat-item">🛡️ <span id="shield-display">0</span>개</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="app-content">
+
+        <!-- 화면 1: 홈/대시보드 -->
+        <div id="tab-home" class="tab-view hidden">
+            <div class="card">
+                <div class="card-title">오늘의 요약 📅</div>
+                <p id="home-summary" style="margin: 4px 0 8px 0; font-weight: 600;">오늘의 데일리 퀘스트: 0 / 2 완료</p>
+                <div id="daily-quick-list"></div>
+            </div>
+            <div class="card" style="background: #fdf2f8; border-color: #fce7f3;">
+                <div class="card-title" style="color: var(--accent);">진행 중인 이야기 📖</div>
+                <div id="home-story-summary">등록된 이야기가 없습니다.</div>
+            </div>
+            <div class="card">
+                <div class="card-title">설정 및 데이터 ⚙️</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button class="btn btn-ghost btn-small" onclick="exportData()">💾 데이터 내보내기 (JSON)</button>
+                    <button class="btn btn-ghost btn-small" onclick="document.getElementById('import-file').click()">📂 데이터 가져오기</button>
+                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- 화면 2: 퀘스트 -->
+        <div id="tab-quests" class="tab-view hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="margin:0; font-size:1.3rem;">퀘스트 목록</h2>
+                <button class="btn btn-ghost btn-small" onclick="openRewardSettings()">🎁 보상 설정</button>
+            </div>
+            
+            <div style="margin-bottom: 12px; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
+                <button class="btn btn-ghost btn-small" onclick="filterQuests('전체')">전체</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests('작가')">✍️ 작가</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests('캐릭터')">👤 캐릭터</button>
+                <button class="btn btn-ghost btn-small" onclick="filterQuests('서사')">📜 서사</button>
+            </div>
+
+            <div id="quest-list"></div>
+        </div>
+
+        <!-- 화면 3: 상점 -->
+        <div id="tab-shop" class="tab-view hidden">
+            <h2 style="margin-bottom: 14px; font-size:1.3rem;">작가들의 상점</h2>
+            <div class="grid" id="shop-list"></div>
+            <h3 style="margin-top: 24px; margin-bottom: 10px; font-size:1.05rem;">나의 가방</h3>
+            <div id="inventory-list" class="grid"></div>
+        </div>
+
+        <!-- 화면 4: 연구소 (구 아이디어 뱅크 확장) -->
+        <div id="tab-ideas" class="tab-view hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h2 style="margin:0; font-size:1.3rem;">🔬 창작 연구소</h2>
+                <button class="btn btn-primary btn-small" onclick="handleFab()">+ 새 기록</button>
+            </div>
+
+            <!-- 연구소 서브 탭 3개 -->
+            <div class="sub-nav">
+                <button class="sub-nav-btn" id="lab-tab-ideas" onclick="switchLabSubTab('ideas')">💡 일반 아이디어</button>
+                <button class="sub-nav-btn" id="lab-tab-otk" onclick="switchLabSubTab('otk')">🔥 OTK 몰입 연구</button>
+                <button class="sub-nav-btn" id="lab-tab-life" onclick="switchLabSubTab('life')">🗣️ 기막힌 이야기</button>
+            </div>
+
+            <!-- 연구소 서브 탭 1: 일반 아이디어 -->
+            <div id="lab-view-ideas" class="lab-subview">
+                <input type="text" id="idea-search" placeholder="태그나 내용 검색..." oninput="renderIdeas()">
+                <div id="idea-list"></div>
+            </div>
+
+            <!-- 연구소 서브 탭 2: OTK 몰입 연구 -->
+            <div id="lab-view-otk" class="lab-subview hidden">
+                <div style="display:flex; gap:6px; margin-bottom:12px;">
+                    <button class="btn btn-ghost btn-small" id="otk-toggle-wow" onclick="switchOtkMode('wow')">와우 포인트 보관함</button>
+                    <button class="btn btn-ghost btn-small" id="otk-toggle-pred" onclick="switchOtkMode('pred')">예측 노트</button>
+                </div>
+
+                <!-- 와우 포인트 보관함 -->
+                <div id="otk-mode-wow">
+                    <div style="display:flex; gap:6px; margin-bottom:8px;">
+                        <input type="text" id="otk-wow-search" placeholder="작품명/내용/기법 검색..." style="margin-bottom:0;" oninput="renderOtkWows()">
+                        <select id="otk-wow-emotion-filter" style="width:130px; margin-bottom:0;" onchange="renderOtkWows()">
+                            <option value="">모든 감정</option>
+                            <option>카타르시스</option>
+                            <option>반전</option>
+                            <option>설렘</option>
+                            <option>분노</option>
+                            <option>긴장</option>
+                            <option>통쾌</option>
+                            <option>슬픔</option>
+                            <option>기타</option>
+                        </select>
+                    </div>
+                    <div id="otk-wow-list"></div>
+                </div>
+
+                <!-- 예측 노트 -->
+                <div id="otk-mode-pred" class="hidden">
+                    <!-- 예측 통계 바 -->
+                    <div class="sub-card" id="otk-pred-stats" style="background:#eef2ff; border-color:#c7d2fe; margin-bottom:12px;"></div>
+                    <div style="display:flex; gap:6px; margin-bottom:8px;">
+                        <select id="otk-pred-filter" style="margin-bottom:0;" onchange="renderOtkPredictions()">
+                            <option value="all">전체 상태</option>
+                            <option value="pending">🔒 대기 중</option>
+                            <option value="resolved">✅ 기록 완료</option>
+                        </select>
+                    </div>
+                    <div id="otk-pred-list"></div>
+                </div>
+            </div>
+
+            <!-- 연구소 서브 탭 3: 기막힌 이야기 (생활 소재 창고) -->
+            <div id="lab-view-life" class="lab-subview hidden">
+                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                    <input type="text" id="life-search" placeholder="요점/원본/태그 검색..." style="margin-bottom:0;" oninput="renderLifeStories()">
+                    <select id="life-status-filter" style="width:120px; margin-bottom:0;" onchange="renderLifeStories()">
+                        <option value="">전체 상태</option>
+                        <option value="보관 중">보관 중</option>
+                        <option value="적용 완료">적용 완료</option>
+                    </select>
+                </div>
+                <div id="life-story-list"></div>
+            </div>
+        </div>
+
+        <!-- 화면 5: 이야기 라이브러리 -->
+        <div id="tab-library" class="tab-view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h2 style="margin:0; font-size:1.3rem;">이야기 라이브러리</h2>
+                <button class="btn btn-primary btn-small" onclick="openNewStoryModal()">+ 새 이야기</button>
+            </div>
+            <div id="story-list"></div>
+        </div>
+
+    </div>
+
+    <!-- Floating Action Button -->
+    <div id="fab" class="fab" onclick="handleFab()">+</div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a class="nav-item" onclick="switchTab('home')">
+            <span class="nav-icon">🏠</span><span>홈</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('quests')">
+            <span class="nav-icon">⚔️</span><span>퀘스트</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('shop')">
+            <span class="nav-icon">💰</span><span>상점</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('ideas')">
+            <span class="nav-icon">🔬</span><span>연구소</span>
+        </a>
+        <a class="nav-item active" onclick="switchTab('library')">
+            <span class="nav-icon">📚</span><span>라이브러리</span>
+        </a>
+    </nav>
+
+    <!-- 공용 모달 컨테이너 -->
+    <div id="modal-container" class="modal hidden" onclick="handleModalBackdropClick(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                <h3 id="modal-title" style="margin:0; font-size:1.15rem;">등록하기</h3>
+                <button class="btn btn-ghost btn-small" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modal-body"></div>
+            <div style="display: flex; gap: 8px; margin-top: 18px;" id="modal-footer">
+                <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">닫기</button>
+                <button class="btn btn-primary" style="flex:1" id="modal-save-btn">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림창 -->
+    <div id="toast"></div>
+
+    <script>
+        /** 전역 상태 선언 및 초기값 **/
+        let state = {
+            user: {
+                level: 1, xp: 0, gold: 100, streak: 0, lastLogin: null, shields: 0
+            },
+            rewardConfig: {
+                A: { xp: 30, gold: 15 },
+                B: { xp: 15, gold: 7 },
+                C: { xp: 7, gold: 3 }
+            },
+            quests: [
+                { id: 1, title: "매일 500자 쓰기", desc: "분량에 상관없이 매일 쓰는 습관", grade: "B", category: "작가", isDaily: true, completedAt: null },
+                { id: 2, title: "캐릭터 프로필 완성", desc: "주인공의 심층 심리 분석", grade: "A", category: "캐릭터", isDaily: false, completedAt: null },
+                { id: 3, title: "맞춤법 검사 돌리기", desc: "퇴고의 기본", grade: "C", category: "작가", isDaily: true, completedAt: null }
+            ],
+            ideas: [],
+            stories: [],
+            shopItems: [
+                { id: 'shield', name: '결석 면제권', price: 50, desc: '스트릭이 끊기는 것을 1회 방어합니다.', icon: '🛡️' },
+                { id: 'coffee', name: '스테미나 커피', price: 20, desc: '오늘 얻는 XP가 1.5배가 됩니다 (컨셉용)', icon: '☕' },
+                { id: 'card', name: '영감 카드', price: 10, desc: '랜덤한 글쓰기 주제를 제시받습니다.', icon: '🃏' },
+                { id: 'deadline', name: '마감 연장권', price: 100, desc: '마감에 대한 심리적 압박을 해소합니다.', icon: '⏳' }
+            ],
+            inventory: [],
+            categories: ["작가", "캐릭터", "서사"],
+            // B-1, B-2 신규 필드
+            otk: {
+                wows: [],
+                predictions: []
+            },
+            lifeStories: []
+        };
+
+        let currentTab = 'library';
+        let questFilter = '전체';
+        let currentStorySubTab = 'foundation';
+        let currentStoryId = null;
+
+        // 연구소 내부 상태
+        let currentLabSubTab = 'ideas'; // 'ideas' | 'otk' | 'life'
+        let currentOtkMode = 'wow'; // 'wow' | 'pred'
+
+        // 디바운스 타이머
+        let saveDebounceTimer = null;
+
+        /** HTML 이스케이프 유틸리티 **/
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        /** 토스트 메시지 함수 (alert 대신 사용) **/
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = message;
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        /** 공용 보상 지급 및 레벨업 함수 (B-3) **/
+        function addReward(grade) {
+            const reward = state.rewardConfig[grade] || state.rewardConfig.C;
+            state.user.xp += reward.xp;
+            state.user.gold += reward.gold;
+
+            let levelUp = false;
+            let needed = state.user.level * 100;
+            while (state.user.xp >= needed) {
+                state.user.level++;
+                state.user.xp -= needed;
+                needed = state.user.level * 100;
+                levelUp = true;
+            }
+
+            saveImmediately();
+            updateUIStats();
+
+            if (levelUp) {
+                showToast(`🎉 레벨업! LV.${state.user.level} 달성! (+${reward.xp}XP +${reward.gold}G)`);
+            } else {
+                showToast(`🎁 보상 획득: +${reward.xp}XP +${reward.gold}G`);
+            }
+        }
+
+        /** Textarea 자동 높이 조절 (A-1) **/
+        function autoResizeTextarea(el) {
+            if (!el) return;
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
+        }
+
+        function autoResizeAllTextareas(parent = document) {
+            requestAnimationFrame(() => {
+                parent.querySelectorAll('textarea').forEach(tx => {
+                    autoResizeTextarea(tx);
+                });
+            });
+        }
+
+        // 전역 input 이벤트 위임: 모든 textarea 자동 확장
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.tagName.toLowerCase() === 'textarea') {
+                autoResizeTextarea(e.target);
+            }
+        });
+
+        /** 데이터 저장: 디바운스 & 즉시 저장 (A-2) **/
+        function saveDebounced() {
+            if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(() => {
+                saveImmediately();
+            }, 600);
+        }
+
+        function saveImmediately() {
+            if (saveDebounceTimer) {
+                clearTimeout(saveDebounceTimer);
+                saveDebounceTimer = null;
+            }
+            try {
+                localStorage.setItem('writer_app_data', JSON.stringify(state));
+            } catch (e) {
+                console.error("데이터 저장 실패:", e);
+            }
+            updateUIStats();
+        }
+
+        window.addEventListener('beforeunload', saveImmediately);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') saveImmediately();
+        });
+
+        /** 마이그레이션 로직 (A-3, C) **/
+        function migrateStory(s) {
+            if (!s) return s;
+            if (s.theme === undefined) s.theme = "";
+            if (s.fantasy === undefined) s.fantasy = "";
+            if (!Array.isArray(s.characters)) s.characters = [];
+            if (!Array.isArray(s.relationships)) s.relationships = [];
+            if (!Array.isArray(s.arcPoints)) s.arcPoints = [];
+            if (!Array.isArray(s.episodes)) s.episodes = [];
+
+            // A-3 mainline 7개 필드 보장
+            if (!s.mainline || typeof s.mainline !== 'object') {
+                s.mainline = {
+                    want: "",
+                    need: "",
+                    goal: "",
+                    penalty: "",
+                    antagonist: "",
+                    ending: "",
+                    summary: ""
+                };
+            } else {
+                const keys = ['want', 'need', 'goal', 'penalty', 'antagonist', 'ending', 'summary'];
+                keys.forEach(k => {
+                    if (s.mainline[k] === undefined) s.mainline[k] = "";
+                });
+            }
+
+            s.episodes = s.episodes.map((ep, idx) => {
+                if (typeof ep === 'string') {
+                    return {
+                        id: Date.now() + idx,
+                        title: ep,
+                        goal: "",
+                        penalty: "",
+                        problem: "",
+                        solution: "",
+                        innerChange: "",
+                        relationshipChange: "",
+                        rightChoice: "",
+                        hook: "",
+                        infoStage: "예측가능",
+                        confrontationCharacterId: null
+                    };
+                }
+                return {
+                    id: ep.id || (Date.now() + idx),
+                    title: ep.title || `에피소드 ${idx + 1}`,
+                    goal: ep.goal || "",
+                    penalty: ep.penalty || "",
+                    problem: ep.problem || "",
+                    solution: ep.solution || "",
+                    innerChange: ep.innerChange || "",
+                    relationshipChange: ep.relationshipChange || "",
+                    rightChoice: ep.rightChoice || "",
+                    hook: ep.hook || "",
+                    infoStage: ep.infoStage || "예측가능",
+                    confrontationCharacterId: ep.confrontationCharacterId || null
+                };
+            });
+
+            s.characters = s.characters.map((c, idx) => ({
+                id: c.id || (Date.now() + idx),
+                name: c.name || "이름 없는 인물",
+                contradiction: c.contradiction || "",
+                avoidance: c.avoidance || "",
+                confrontation: c.confrontation || "",
+                confrontationUsed: !!c.confrontationUsed,
+                confrontationEpisodeIdx: c.confrontationEpisodeIdx || null
+            }));
+
+            s.relationships = s.relationships.map((r, idx) => ({
+                id: r.id || (Date.now() + idx),
+                characterAId: r.characterAId || null,
+                characterBId: r.characterBId || null,
+                description: r.description || "",
+                irony: r.irony || "",
+                resolved: !!r.resolved
+            }));
+
+            s.arcPoints = s.arcPoints.map((a, idx) => ({
+                id: a.id || (Date.now() + idx),
+                label: a.label || "전환점",
+                infoStage: a.infoStage || "예측가능",
+                note: a.note || "",
+                linkedConfrontationCharacterId: a.linkedConfrontationCharacterId || null
+            }));
+
+            return s;
+        }
+
+        function migrateAllData() {
+            if (!state.user) state.user = { level: 1, xp: 0, gold: 100, streak: 0, lastLogin: null, shields: 0 };
+            if (!state.rewardConfig) {
+                state.rewardConfig = {
+                    A: { xp: 30, gold: 15 },
+                    B: { xp: 15, gold: 7 },
+                    C: { xp: 7, gold: 3 }
+                };
+            }
+            if (!Array.isArray(state.quests)) state.quests = [];
+            if (!Array.isArray(state.ideas)) state.ideas = [];
+            if (!Array.isArray(state.stories)) state.stories = [];
+            if (!Array.isArray(state.shopItems)) {
+                state.shopItems = [
+                    { id: 'shield', name: '결석 면제권', price: 50, desc: '스트릭이 끊기는 것을 1회 방어합니다.', icon: '🛡️' },
+                    { id: 'coffee', name: '스테미나 커피', price: 20, desc: '오늘 얻는 XP가 1.5배가 됩니다 (컨셉용)', icon: '☕' },
+                    { id: 'card', name: '영감 카드', price: 10, desc: '랜덤한 글쓰기 주제를 제시받습니다.', icon: '🃏' },
+                    { id: 'deadline', name: '마감 연장권', price: 100, desc: '마감에 대한 심리적 압박을 해소합니다.', icon: '⏳' }
+                ];
+            }
+            if (!Array.isArray(state.inventory)) state.inventory = [];
+            if (!Array.isArray(state.categories)) state.categories = ["작가", "캐릭터", "서사"];
+
+            // 연구소 데이터 보장 (B-1, B-2)
+            if (!state.otk || typeof state.otk !== 'object') {
+                state.otk = { wows: [], predictions: [] };
+            }
+            if (!Array.isArray(state.otk.wows)) state.otk.wows = [];
+            if (!Array.isArray(state.otk.predictions)) state.otk.predictions = [];
+            if (!Array.isArray(state.lifeStories)) state.lifeStories = [];
+
+            // 이야기 마이그레이션
+            state.stories = state.stories.map(migrateStory);
+        }
+
+        /** 앱 초기화 **/
+        function init() {
+            const saved = localStorage.getItem('writer_app_data');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch(e) {
+                    console.error("저장 데이터 파싱 에러:", e);
+                }
+            }
+            migrateAllData();
+            checkStreak();
+            renderAll();
+            switchTab(currentTab);
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            if (state.user.lastLogin === today) return;
+
+            if (state.user.lastLogin) {
+                const lastDate = new Date(state.user.lastLogin);
+                const diffTime = Math.abs(new Date(today) - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 1) {
+                    if (state.user.shields > 0) {
+                        state.user.shields--;
+                        showToast("🛡️ 면제권을 사용하여 연속 일수를 유지했습니다!");
+                    } else {
+                        state.user.streak = 0;
+                        showToast("🔥 연속 일수가 초기화되었습니다.");
+                    }
+                }
+            }
+            
+            state.quests.forEach(q => {
+                if(q.isDaily && q.completedAt !== today) {
+                    q.completedAt = null;
+                }
+            });
+
+            state.user.lastLogin = today;
+            saveImmediately();
+        }
+
+        /** 전체 UI 렌더링 **/
+        function renderAll() {
+            updateUIStats();
+            renderHome();
+            renderQuests();
+            renderShop();
+            renderIdeas();
+            renderOtkWows();
+            renderOtkPredictions();
+            renderLifeStories();
+            renderStories();
+        }
+
+        function updateUIStats() {
+            document.getElementById('lv-display').innerText = state.user.level;
+            document.getElementById('lv-num').innerText = state.user.level;
+            document.getElementById('gold-display').innerText = state.user.gold;
+            document.getElementById('streak-display').innerText = state.user.streak;
+            document.getElementById('shield-display').innerText = state.user.shields;
+            
+            const needed = state.user.level * 100;
+            const percent = Math.min(100, (state.user.xp / needed) * 100);
+            document.getElementById('xp-current').innerText = state.user.xp;
+            document.getElementById('xp-needed').innerText = Math.round(needed);
+            document.getElementById('xp-bar').style.width = `${percent}%`;
+        }
+
+        function switchTab(tabId) {
+            saveImmediately();
+            currentTab = tabId;
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if(target) target.classList.remove('hidden');
+            
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            const tabOrder = ['home', 'quests', 'shop', 'ideas', 'library'];
+            const activeIndex = tabOrder.indexOf(tabId);
+            navItems.forEach((item, idx) => {
+                if (idx === activeIndex) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+            
+            if(tabId === 'home') renderHome();
+            if(tabId === 'ideas') switchLabSubTab(currentLabSubTab);
+            if(tabId === 'library') renderStories();
+        }
+
+        // ==========================================
+        //  화면 1: 홈
+        // ==========================================
+        function renderHome() {
+            const today = new Date().toDateString();
+            const dailyQuests = state.quests.filter(q => q.isDaily);
+            const completed = dailyQuests.filter(q => q.completedAt === today).length;
+            
+            document.getElementById('home-summary').innerText = 
+                `오늘의 데일리 퀘스트: ${completed} / ${dailyQuests.length} 완료`;
+
+            let html = '';
+            dailyQuests.forEach(q => {
+                const isDone = q.completedAt === today;
+                html += `
+                    <div style="font-size: 0.9rem; margin-top: 5px; color: ${isDone ? 'var(--success)' : 'var(--text-muted)'}">
+                        ${isDone ? '✅' : '⬜'} ${escapeHtml(q.title)}
+                    </div>
+                `;
+            });
+            document.getElementById('daily-quick-list').innerHTML = html || '<div style="font-size:0.85rem; color:var(--text-muted)">데일리 퀘스트가 없습니다.</div>';
+
+            if(state.stories.length > 0) {
+                const s = state.stories[0];
+                const stats = calculateStoryHealth(s);
+                document.getElementById('home-story-summary').innerHTML = `
+                    <strong style="font-size:1rem; color:var(--text-main);">${escapeHtml(s.title)}</strong>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin: 3px 0;">${escapeHtml(s.logline) || '로그라인 미등록'}</div>
+                    <div style="font-size: 0.75rem; color: var(--primary); margin-top: 6px;">
+                        📌 회차 ${s.episodes.length}개 · 미소모 대면 ${stats.unconsumedConfrontations}개 · 훅 누락 ${stats.emptyHooks}개 · 스토리라인 미완성 ${stats.emptyMainline}칸
+                    </div>
+                `;
+            } else {
+                document.getElementById('home-story-summary').innerText = "등록된 이야기가 없습니다.";
+            }
+        }
+
+        // ==========================================
+        //  화면 2: 퀘스트
+        // ==========================================
+        function filterQuests(cat) {
+            questFilter = cat;
+            renderQuests();
+        }
+
+        function renderQuests() {
+            const list = document.getElementById('quest-list');
+            list.innerHTML = '';
+            const today = new Date().toDateString();
+
+            state.quests.forEach(q => {
+                if (questFilter !== '전체' && q.category !== questFilter) return;
+
+                const isDone = q.completedAt === today || (!q.isDaily && q.completedAt);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.opacity = isDone ? '0.6' : '1';
+                
+                card.innerHTML = `
+                    <div class="card-title">
+                        <span>${escapeHtml(q.title)} ${q.isDaily ? '<span class="badge-daily">데일리</span>' : ''}</span>
+                        <span style="color: var(--secondary)">${escapeHtml(q.grade)}급</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">${escapeHtml(q.desc)}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag">#${escapeHtml(q.category)}</span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteQuest(${q.id})">🗑️</button>
+                            <button class="btn ${isDone ? 'btn-ghost' : 'btn-primary'} btn-small" 
+                                onclick="completeQuest(${q.id})" ${isDone ? 'disabled' : ''}>
+                                ${isDone ? '완료됨' : '완료 (+'+state.rewardConfig[q.grade].xp+'XP)'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function completeQuest(id) {
+            const quest = state.quests.find(q => q.id === id);
+            if (!quest) return;
+            quest.completedAt = new Date().toDateString();
+
+            const daily = state.quests.filter(q => q.isDaily);
+            if (daily.length > 0 && daily.every(q => q.completedAt === new Date().toDateString())) {
+                state.user.streak++;
+            }
+
+            addReward(quest.grade);
+            renderQuests();
+            renderHome();
+        }
+
+        function deleteQuest(id) {
+            if(confirm('퀘스트를 삭제할까요?')) {
+                state.quests = state.quests.filter(q => q.id != id);
+                saveImmediately();
+                renderQuests();
+                renderHome();
+            }
+        }
+
+        // ==========================================
+        //  화면 3: 상점
+        // ==========================================
+        function renderShop() {
+            const list = document.getElementById('shop-list');
+            list.innerHTML = '';
+            state.shopItems.forEach(item => {
+                list.innerHTML += `
+                    <div class="card" style="text-align: center; padding: 14px;">
+                        <div style="font-size: 1.8rem; margin-bottom: 4px;">${item.icon}</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">${escapeHtml(item.name)}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); min-height: 28px; margin: 4px 0;">${escapeHtml(item.desc)}</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%" onclick="buyItem('${escapeHtml(item.id)}')">
+                            💰 ${item.price}G 구매
+                        </button>
+                    </div>
+                `;
+            });
+            renderInventory();
+        }
+
+        function renderInventory() {
+            const invList = document.getElementById('inventory-list');
+            invList.innerHTML = '';
+            if (state.inventory.length === 0) {
+                invList.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted); grid-column:1/-1;">가방이 비어 있습니다.</div>';
+                return;
+            }
+            state.inventory.forEach(item => {
+                invList.innerHTML += `
+                    <div class="card" style="text-align: center; padding: 10px;">
+                        <div style="font-size: 1.5rem;">${item.icon}</div>
+                        <div style="font-weight: 700; font-size: 0.85rem;">${escapeHtml(item.name)}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">${escapeHtml(item.desc)}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function buyItem(id) {
+            const item = state.shopItems.find(i => i.id === id);
+            if (!item) return;
+            if (state.user.gold >= item.price) {
+                state.user.gold -= item.price;
+                if (id === 'shield') {
+                    state.user.shields++;
+                } else {
+                    state.inventory.push({ ...item, uid: Date.now() });
+                }
+                saveImmediately();
+                renderAll();
+                showToast(`🎉 ${item.name}을(를) 구매했습니다!`);
+            } else {
+                showToast("⚠️ 골드가 부족합니다!");
+            }
+        }
+
+        // ==========================================
+        //  화면 4: 연구소 (B-1, B-2)
+        // ==========================================
+        function switchLabSubTab(tab) {
+            currentLabSubTab = tab;
+            ['ideas', 'otk', 'life'].forEach(t => {
+                const btn = document.getElementById(`lab-tab-${t}`);
+                const view = document.getElementById(`lab-view-${t}`);
+                if (btn) btn.classList.toggle('active', t === tab);
+                if (view) view.classList.toggle('hidden', t !== tab);
+            });
+
+            if (tab === 'ideas') renderIdeas();
+            if (tab === 'otk') {
+                switchOtkMode(currentOtkMode);
+            }
+            if (tab === 'life') renderLifeStories();
+            autoResizeAllTextareas();
+        }
+
+        // --- B. 연구소 - 일반 아이디어 ---
+        function renderIdeas() {
+            const list = document.getElementById('idea-list');
+            const searchInput = document.getElementById('idea-search');
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+            list.innerHTML = '';
+            
+            const filtered = state.ideas.filter(idea => {
+                if (!search) return true;
+                const matchContent = idea.content && idea.content.toLowerCase().includes(search);
+                const matchTags = idea.tags && idea.tags.some(t => t.toLowerCase().includes(search));
+                return matchContent || matchTags;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:16px 0; text-align:center;">등록된 아이디어가 없습니다.</div>';
+                return;
+            }
+
+            filtered.forEach(idea => {
+                const proj = state.stories.find(s => s.id == idea.projectId);
+                list.innerHTML += `
+                    <div class="card">
+                        <div style="white-space: pre-wrap; margin-bottom: 10px; font-size:0.9rem;">${escapeHtml(idea.content)}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                ${(idea.tags || []).map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+                                ${proj ? `<span class="tag" style="background:#fff1f2; color:#be123c;">📖 ${escapeHtml(proj.title)}</span>` : ''}
+                            </div>
+                            <button class="btn btn-ghost btn-small" onclick="deleteIdea(${idea.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteIdea(id) {
+            if(confirm('아이디어를 삭제할까요?')) {
+                state.ideas = state.ideas.filter(i => i.id != id);
+                saveImmediately();
+                renderIdeas();
+            }
+        }
+
+        // --- B-1. 연구소 - OTK 몰입 연구 ---
+        function switchOtkMode(mode) {
+            currentOtkMode = mode;
+            const btnWow = document.getElementById('otk-toggle-wow');
+            const btnPred = document.getElementById('otk-toggle-pred');
+            const viewWow = document.getElementById('otk-mode-wow');
+            const viewPred = document.getElementById('otk-mode-pred');
+
+            if (btnWow) {
+                btnWow.className = `btn btn-small ${mode === 'wow' ? 'btn-primary' : 'btn-ghost'}`;
+            }
+            if (btnPred) {
+                btnPred.className = `btn btn-small ${mode === 'pred' ? 'btn-primary' : 'btn-ghost'}`;
+            }
+            if (viewWow) viewWow.classList.toggle('hidden', mode !== 'wow');
+            if (viewPred) viewPred.classList.toggle('hidden', mode !== 'pred');
+
+            if (mode === 'wow') renderOtkWows();
+            if (mode === 'pred') renderOtkPredictions();
+        }
+
+        function renderOtkWows() {
+            const list = document.getElementById('otk-wow-list');
+            if (!list) return;
+            const searchInput = document.getElementById('otk-wow-search');
+            const emotionSelect = document.getElementById('otk-wow-emotion-filter');
+            const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const emotionFilter = emotionSelect ? emotionSelect.value : '';
+
+            const filtered = (state.otk.wows || []).filter(w => {
+                if (emotionFilter && w.emotion !== emotionFilter) return false;
+                if (!search) return true;
+                const matchWork = (w.work || '').toLowerCase().includes(search);
+                const matchScene = (w.scene || '').toLowerCase().includes(search);
+                const matchTech = (w.technique || '').toLowerCase().includes(search);
+                const matchTags = (w.tags || []).some(t => t.toLowerCase().includes(search));
+                return matchWork || matchScene || matchTech || matchTags;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:20px; text-align:center;">기록된 와우 포인트가 없습니다.<br>+ 버튼을 눌러 독자를 홀린 강렬한 순간을 연구해보세요!</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(w => `
+                <div class="card">
+                    <div class="card-title">
+                        <span><strong>${escapeHtml(w.work)}</strong> <span class="tag" style="background:#fce7f3; color:#be185d;">${escapeHtml(w.emotion || '미지정')}</span></span>
+                        <div>
+                            <button class="btn btn-ghost btn-small" onclick="openEditOtkWowModal(${w.id})">✏️</button>
+                            <button class="btn btn-ghost btn-small" onclick="deleteOtkWow(${w.id})">🗑️</button>
+                        </div>
+                    </div>
+                    <div style="font-size:0.9rem; margin-bottom:8px; white-space:pre-wrap;"><strong>장면:</strong> ${escapeHtml(w.scene)}</div>
+                    <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;"><strong>홀린 이유:</strong> ${escapeHtml(w.why || '미입력')}</div>
+                    ${w.technique ? `<div style="font-size:0.82rem; color:var(--primary-dark); margin-bottom:6px;"><strong>쓰인 기법:</strong> ${escapeHtml(w.technique)}</div>` : ''}
+                    ${w.apply ? `<div class="sub-card" style="font-size:0.82rem; background:#fffbeb; border-color:#fde68a; margin-top:8px;">💡 <strong>내 작품 적용:</strong> ${escapeHtml(w.apply)}</div>` : ''}
+                    <div style="margin-top:8px;">
+                        ${(w.tags || []).map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNewOtkWowModal() {
+            openModal('🔥 새 와우 포인트 연구', `
+                <label>작품명</label>
+                <input type="text" id="wow-work" placeholder="작품 제목 (예: 화산귀환, 괴물 등)">
+
+                <label>홀린 감정 태그</label>
+                <select id="wow-emotion">
+                    <option>카타르시스</option>
+                    <option>반전</option>
+                    <option>설렘</option>
+                    <option>분노</option>
+                    <option>긴장</option>
+                    <option>통쾌</option>
+                    <option>슬픔</option>
+                    <option>기타</option>
+                </select>
+
+                <label>장면 설명</label>
+                <textarea id="wow-scene" rows="3" placeholder="독자를 사로잡은 구체적인 장면 요약"></textarea>
+
+                <label>내가 이 장면에 홀린 이유</label>
+                <textarea id="wow-why" rows="2" placeholder="왜 몰입되었는가? 어떤 심리를 건드렸는가?"></textarea>
+
+                <label>쓰인 기법</label>
+                <input type="text" id="wow-tech" placeholder="예: 정보 비대칭, 카타르시스 직전의 극단적 억압">
+
+                <label>내 작품에 적용한다면?</label>
+                <textarea id="wow-apply" rows="2" placeholder="내 소설의 어떤 인물/상황에 치환할 수 있을까?"></textarea>
+
+                <label>태그 (쉼표로 구분)</label>
+                <input type="text" id="wow-tags" placeholder="사이다, 빌드업, 복수">
+            `, () => {
+                const work = document.getElementById('wow-work').value.trim();
+                const scene = document.getElementById('wow-scene').value.trim();
+                if (!work || !scene) {
+                    alert("작품명과 장면을 입력해 주세요.");
+                    return;
+                }
+                const newWow = {
+                    id: Date.now(),
+                    work,
+                    emotion: document.getElementById('wow-emotion').value,
+                    scene,
+                    why: document.getElementById('wow-why').value.trim(),
+                    technique: document.getElementById('wow-tech').value.trim(),
+                    apply: document.getElementById('wow-apply').value.trim(),
+                    tags: document.getElementById('wow-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+                    createdAt: new Date().toISOString()
+                };
+                state.otk.wows.push(newWow);
+                saveImmediately();
+                addReward('C'); // B-3 보상
+                closeModal();
+                renderOtkWows();
+            });
+        }
+
+        function openEditOtkWowModal(id) {
+            const w = state.otk.wows.find(x => x.id === id);
+            if (!w) return;
+            openModal('와우 포인트 수정', `
+                <label>작품명</label>
+                <input type="text" id="wow-work" value="${escapeHtml(w.work)}">
+
+                <label>홀린 감정 태그</label>
+                <select id="wow-emotion">
+                    ${['카타르시스','반전','설렘','분노','긴장','통쾌','슬픔','기타'].map(opt => `
+                        <option ${w.emotion === opt ? 'selected' : ''}>${opt}</option>
+                    `).join('')}
+                </select>
+
+                <label>장면 설명</label>
+                <textarea id="wow-scene" rows="3">${escapeHtml(w.scene)}</textarea>
+
+                <label>내가 이 장면에 홀린 이유</label>
+                <textarea id="wow-why" rows="2">${escapeHtml(w.why || '')}</textarea>
+
+                <label>쓰인 기법</label>
+                <input type="text" id="wow-tech" value="${escapeHtml(w.technique || '')}">
+
+                <label>내 작품에 적용한다면?</label>
+                <textarea id="wow-apply" rows="2">${escapeHtml(w.apply || '')}</textarea>
+
+                <label>태그 (쉼표로 구분)</label>
+                <input type="text" id="wow-tags" value="${escapeHtml((w.tags || []).join(', '))}">
+            `, () => {
+                w.work = document.getElementById('wow-work').value.trim();
+                w.emotion = document.getElementById('wow-emotion').value;
+                w.scene = document.getElementById('wow-scene').value.trim();
+                w.why = document.getElementById('wow-why').value.trim();
+                w.technique = document.getElementById('wow-tech').value.trim();
+                w.apply = document.getElementById('wow-apply').value.trim();
+                w.tags = document.getElementById('wow-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+                saveImmediately();
+                // 수정 시에는 보상 없음
+                closeModal();
+                renderOtkWows();
+            });
+        }
+
+        function deleteOtkWow(id) {
+            if (confirm('이 와우 포인트를 삭제할까요?')) {
+                state.otk.wows = state.otk.wows.filter(w => w.id !== id);
+                saveImmediately();
+                renderOtkWows();
+            }
+        }
+
+        // --- B-1. 예측 노트 ---
+        function renderOtkPredictions() {
+            const statsEl = document.getElementById('otk-pred-stats');
+            const list = document.getElementById('otk-pred-list');
+            const filter = document.getElementById('otk-pred-filter').value;
+            if (!list) return;
+
+            const all = state.otk.predictions || [];
+            const resolvedCount = all.filter(p => p.resolvedAt).length;
+            let scoreSum = 0;
+            all.forEach(p => {
+                if (p.resolvedAt) {
+                    if (p.result === '적중') scoreSum += 1;
+                    else if (p.result === '부분 적중') scoreSum += 0.5;
+                }
+            });
+            const rate = resolvedCount > 0 ? Math.round((scoreSum / resolvedCount) * 100) : 0;
+
+            if (statsEl) {
+                statsEl.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>🎯 예측 적중 통계</strong>
+                        <span class="tag" style="background:var(--primary); color:white;">적중률: ${rate}%</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#475569; margin-top:4px;">
+                        총 예측 <strong>${all.length}건</strong> 중 결과 기록 완료 <strong>${resolvedCount}건</strong> (적중=1, 부분 적중=0.5)
+                    </div>
+                `;
+            }
+
+            const filtered = all.filter(p => {
+                if (filter === 'pending') return !p.resolvedAt;
+                if (filter === 'resolved') return !!p.resolvedAt;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:20px; text-align:center;">기록된 예측 노트가 없습니다.<br>+ 버튼을 눌러 다음 전개를 예측해 보세요!</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(p => {
+                const isResolved = !!p.resolvedAt;
+                let badgeColor = '#fef3c7';
+                let textColor = '#92400e';
+                if (p.result === '적중') { badgeColor = '#dcfce7'; textColor = '#166534'; }
+                else if (p.result === '빗나감') { badgeColor = '#fee2e2'; textColor = '#991b1b'; }
+
+                return `
+                    <div class="card">
+                        <div class="card-title">
+                            <span><strong>${escapeHtml(p.work)}</strong></span>
+                            <div>
+                                ${isResolved ? `<span class="tag" style="background:${badgeColor}; color:${textColor};">${escapeHtml(p.result)}</span>` : '<span class="tag" style="background:#f1f5f9; color:var(--text-muted);">🔒 대기 중</span>'}
+                                <button class="btn btn-ghost btn-small" onclick="deleteOtkPred(${p.id})">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="font-size:0.85rem; margin-bottom:6px;"><strong>상황:</strong> ${escapeHtml(p.condition)}</div>
+                        <div style="font-size:0.85rem; color:var(--primary-dark); margin-bottom:8px;"><strong>예측:</strong> ${escapeHtml(p.prediction)}</div>
+                        
+                        ${isResolved ? `
+                            <div class="sub-card" style="background:#f8fafc; margin-top:8px; font-size:0.82rem;">
+                                <div><strong>실제 전개:</strong> ${escapeHtml(p.actual)}</div>
+                                <div style="margin-top:4px; color:#475569;"><strong>배운 점:</strong> ${escapeHtml(p.lesson || '미작성')}</div>
+                            </div>
+                        ` : `
+                            <div style="margin-top:10px;">
+                                <button class="btn btn-primary btn-small" style="width:100%;" onclick="openResolveOtkPredModal(${p.id})">
+                                    📖 실제 전개 기록하기
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 예측 등록 모달 (work, condition, prediction만 입력)
+        function openNewOtkPredModal() {
+            openModal('🎯 새 전개 예측 노트', `
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">
+                    ※ 예측 오염 방지를 위해 예측을 저장하기 전에는 실제 전개 칸이 보이지 않습니다.
+                </div>
+                <label>작품명</label>
+                <input type="text" id="pred-work" placeholder="작품 이름">
+
+                <label>이 상황/부분이 있을 때 (조건)</label>
+                <textarea id="pred-cond" rows="2" placeholder="예: 주인공이 위기에 몰려 비밀 무기를 꺼내려 할 때"></textarea>
+
+                <label>이런 전개가 나오면 사람들이 열광할 것이다 (예측)</label>
+                <textarea id="pred-content" rows="3" placeholder="예: 무기를 쓰지 않고 기지로 적을 교란할 것이다"></textarea>
+            `, () => {
+                const work = document.getElementById('pred-work').value.trim();
+                const condition = document.getElementById('pred-cond').value.trim();
+                const prediction = document.getElementById('pred-content').value.trim();
+                if (!work || !condition || !prediction) {
+                    alert("작품명과 상황, 예측을 모두 입력해 주세요.");
+                    return;
+                }
+                const newPred = {
+                    id: Date.now(),
+                    work,
+                    condition,
+                    prediction,
+                    predictedAt: new Date().toISOString(),
+                    actual: "",
+                    result: "",
+                    lesson: "",
+                    resolvedAt: null
+                };
+                state.otk.predictions.push(newPred);
+                saveImmediately();
+                addReward('C'); // B-3 보상
+                closeModal();
+                renderOtkPredictions();
+            });
+        }
+
+        // 실제 전개 기록 모달 (예측은 읽기 전용)
+        function openResolveOtkPredModal(id) {
+            const p = state.otk.predictions.find(x => x.id === id);
+            if (!p) return;
+            openModal('📖 실제 전개 기록하기', `
+                <div class="sub-card" style="background:#f1f5f9; font-size:0.82rem; margin-bottom:12px;">
+                    <div><strong>작품:</strong> ${escapeHtml(p.work)}</div>
+                    <div><strong>상황:</strong> ${escapeHtml(p.condition)}</div>
+                    <div style="color:var(--primary-dark);"><strong>내 예측:</strong> ${escapeHtml(p.prediction)}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">🔒 저장된 예측은 수정할 수 없습니다.</div>
+                </div>
+
+                <label>실제 책의 전개</label>
+                <textarea id="pred-actual" rows="3" placeholder="작가가 실제로 푼 전개"></textarea>
+
+                <label>예측 결과 평가</label>
+                <select id="pred-result">
+                    <option value="적중">적중 (완벽히 맞춤)</option>
+                    <option value="부분 적중">부분 적중 (방향성은 맞음)</option>
+                    <option value="빗나감">빗나감 (완전히 다른 전개)</option>
+                </select>
+
+                <label>차이에서 배운 점 (독자 심리 및 연출 분석)</label>
+                <textarea id="pred-lesson" rows="2" placeholder="왜 작가는 이 방식을 택했을까? 무엇이 더 나았는가?"></textarea>
+            `, () => {
+                const actual = document.getElementById('pred-actual').value.trim();
+                if (!actual) {
+                    alert("실제 전개를 입력해 주세요.");
+                    return;
+                }
+                p.actual = actual;
+                p.result = document.getElementById('pred-result').value;
+                p.lesson = document.getElementById('pred-lesson').value.trim();
+                p.resolvedAt = new Date().toISOString();
+
+                saveImmediately();
+                addReward('C'); // B-3 실제 전개 기록 완료 보상
+                closeModal();
+                renderOtkPredictions();
+            });
+        }
+
+        function deleteOtkPred(id) {
+            if (confirm('이 예측 노트를 삭제할까요?')) {
+                state.otk.predictions = state.otk.predictions.filter(p => p.id !== id);
+                saveImmediately();
+                renderOtkPredictions();
+            }
+        }
+
+        // --- B-2. 기막힌 이야기 (생활 소재 창고) ---
+        function renderLifeStories() {
+            const list = document.getElementById('life-story-list');
+            if (!list) return;
+            const search = (document.getElementById('life-search') ? document.getElementById('life-search').value : '').toLowerCase().trim();
+            const statusFilter = document.getElementById('life-status-filter') ? document.getElementById('life-status-filter').value : '';
+
+            const filtered = (state.lifeStories || []).filter(item => {
+                if (statusFilter && item.status !== statusFilter) return false;
+                if (!search) return true;
+                const matchPoint = (item.point || '').toLowerCase().includes(search);
+                const matchOrig = (item.original || '').toLowerCase().includes(search);
+                const matchTags = (item.tags || []).some(t => t.toLowerCase().includes(search));
+                return matchPoint || matchOrig || matchTags;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:20px; text-align:center;">기록된 기막힌 이야기가 없습니다.<br>+ 버튼을 눌러 일상 속 소재를 소설 아이디어로 변환해보세요!</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(item => {
+                const linkedStory = state.stories.find(s => s.id == item.storyId);
+                return `
+                    <div class="card">
+                        <div class="card-title" style="align-items:flex-start;">
+                            <span style="font-size:1rem; color:var(--primary-dark);">⚡ ${escapeHtml(item.point)}</span>
+                            <div>
+                                <span class="tag" style="background:${item.status === '적용 완료' ? '#dcfce7' : '#f1f5f9'}; color:${item.status === '적용 완료' ? '#166534' : '#475569'};">${escapeHtml(item.status)}</span>
+                                <button class="btn btn-ghost btn-small" onclick="openEditLifeStoryModal(${item.id})">✏️</button>
+                                <button class="btn btn-ghost btn-small" onclick="deleteLifeStory(${item.id})">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">
+                            출처: ${escapeHtml(item.source || '미상')} · 들은 날: ${escapeHtml(item.heardAt || '')}
+                            ${linkedStory ? ` · 📖 연계: <strong>${escapeHtml(linkedStory.title)}</strong>` : ''}
+                        </div>
+
+                        <!-- 접이식 원본 및 적용 아이디어 -->
+                        <details class="guide-box" open style="margin-top:6px;">
+                            <summary>📜 원본 이야기</summary>
+                            <div style="font-size:0.85rem; white-space:pre-wrap; margin-top:6px; color:#334155;">${escapeHtml(item.original)}</div>
+                        </details>
+
+                        <div style="margin-top:10px;">
+                            <div style="font-size:0.82rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">
+                                💡 소설 적용 아이디어 (${(item.applications || []).length}개)
+                            </div>
+                            <div id="life-apps-${item.id}">
+                                ${(item.applications || []).map((app, aIdx) => `
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; margin-bottom:4px; font-size:0.82rem;">
+                                        <span style="flex:1;">• ${escapeHtml(app.text)}</span>
+                                        <button class="btn btn-ghost btn-small" style="padding:2px 6px;" onclick="removeLifeApp(${item.id}, ${app.id})">✕</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="display:flex; gap:6px; margin-top:6px;">
+                                <input type="text" id="new-app-input-${item.id}" placeholder="이걸 소설에 녹인다면 어떤 상황이 적절할까?" style="margin-bottom:0; font-size:0.8rem;">
+                                <button class="btn btn-primary btn-small" style="white-space:nowrap;" onclick="addLifeApp(${item.id})">+ 추가</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:8px;">
+                            ${(item.tags || []).map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openNewLifeStoryModal() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            openModal('🗣️ 새 기막힌 이야기 등록', `
+                <label>기막힌 이유 한 줄 (핵심 요점 / 제목)</label>
+                <input type="text" id="life-point" placeholder="예: 평생 착하던 옆집 아저씨의 섬뜩한 이중생활">
+
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;">
+                        <label>출처 (누구에게/어디서 들었나)</label>
+                        <input type="text" id="life-source" placeholder="예: 삼촌, 술자리, 뉴스 등">
+                    </div>
+                    <div style="flex:1;">
+                        <label>들은 날짜</label>
+                        <input type="date" id="life-date" value="${todayStr}">
+                    </div>
+                </div>
+
+                <label>원본 이야기 내용</label>
+                <textarea id="life-orig" rows="4" placeholder="실제 들었던 이야기의 상세한 정황"></textarea>
+
+                <label>첫 번째 소설 적용 아이디어 (선택)</label>
+                <input type="text" id="life-first-app" placeholder="이걸 소설에 녹인다면 어떤 상황이 적절할까?">
+
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;">
+                        <label>연결할 이야기 (선택)</label>
+                        <select id="life-story">
+                            <option value="">연결 안 함</option>
+                            ${state.stories.map(s => `<option value="${s.id}">${escapeHtml(s.title)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                        <label>상태</label>
+                        <select id="life-status">
+                            <option value="보관 중">보관 중</option>
+                            <option value="적용 완료">적용 완료</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>태그 (쉼표로 구분)</label>
+                <input type="text" id="life-tags" placeholder="괴담, 반전, 인간관계">
+            `, () => {
+                const point = document.getElementById('life-point').value.trim();
+                const original = document.getElementById('life-orig').value.trim();
+                if (!point || !original) {
+                    alert("기막힌 이유와 원본 이야기를 입력해 주세요.");
+                    return;
+                }
+                const firstApp = document.getElementById('life-first-app').value.trim();
+                const apps = firstApp ? [{ id: Date.now(), text: firstApp }] : [];
+
+                const item = {
+                    id: Date.now(),
+                    point,
+                    source: document.getElementById('life-source').value.trim(),
+                    heardAt: document.getElementById('life-date').value,
+                    original,
+                    applications: apps,
+                    storyId: document.getElementById('life-story').value || null,
+                    status: document.getElementById('life-status').value,
+                    tags: document.getElementById('life-tags').value.split(',').map(t => t.trim()).filter(Boolean)
+                };
+
+                state.lifeStories.push(item);
+                saveImmediately();
+                addReward('C'); // B-3 보상
+                closeModal();
+                renderLifeStories();
+            });
+        }
+
+        function openEditLifeStoryModal(id) {
+            const item = state.lifeStories.find(x => x.id === id);
+            if (!item) return;
+
+            openModal('기막힌 이야기 수정', `
+                <label>기막힌 이유 한 줄</label>
+                <input type="text" id="life-point" value="${escapeHtml(item.point)}">
+
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;">
+                        <label>출처</label>
+                        <input type="text" id="life-source" value="${escapeHtml(item.source || '')}">
+                    </div>
+                    <div style="flex:1;">
+                        <label>들은 날짜</label>
+                        <input type="date" id="life-date" value="${escapeHtml(item.heardAt || '')}">
+                    </div>
+                </div>
+
+                <label>원본 이야기 내용</label>
+                <textarea id="life-orig" rows="4">${escapeHtml(item.original)}</textarea>
+
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;">
+                        <label>연결할 이야기</label>
+                        <select id="life-story">
+                            <option value="">연결 안 함</option>
+                            ${state.stories.map(s => `<option value="${s.id}" ${item.storyId == s.id ? 'selected' : ''}>${escapeHtml(s.title)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                        <label>상태</label>
+                        <select id="life-status">
+                            <option value="보관 중" ${item.status === '보관 중' ? 'selected' : ''}>보관 중</option>
+                            <option value="적용 완료" ${item.status === '적용 완료' ? 'selected' : ''}>적용 완료</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>태그 (쉼표로 구분)</label>
+                <input type="text" id="life-tags" value="${escapeHtml((item.tags || []).join(', '))}">
+            `, () => {
+                item.point = document.getElementById('life-point').value.trim();
+                item.source = document.getElementById('life-source').value.trim();
+                item.heardAt = document.getElementById('life-date').value;
+                item.original = document.getElementById('life-orig').value.trim();
+                item.storyId = document.getElementById('life-story').value || null;
+                item.status = document.getElementById('life-status').value;
+                item.tags = document.getElementById('life-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+                saveImmediately();
+                closeModal();
+                renderLifeStories();
+            });
+        }
+
+        function addLifeApp(lifeId) {
+            const input = document.getElementById(`new-app-input-${lifeId}`);
+            if (!input || !input.value.trim()) return;
+            const item = state.lifeStories.find(x => x.id === lifeId);
+            if (!item) return;
+            if (!Array.isArray(item.applications)) item.applications = [];
+            item.applications.push({
+                id: Date.now(),
+                text: input.value.trim()
+            });
+            input.value = '';
+            saveImmediately();
+            renderLifeStories();
+        }
+
+        function removeLifeApp(lifeId, appId) {
+            const item = state.lifeStories.find(x => x.id === lifeId);
+            if (!item) return;
+            item.applications = item.applications.filter(a => a.id !== appId);
+            saveImmediately();
+            renderLifeStories();
+        }
+
+        function deleteLifeStory(id) {
+            if (confirm('이 이야기를 삭제할까요?')) {
+                state.lifeStories = state.lifeStories.filter(x => x.id !== id);
+                saveImmediately();
+                renderLifeStories();
+            }
+        }
+
+        // ==========================================
+        //  화면 5: 이야기 라이브러리 & 정합성 체크 (A-1, A-2, A-3)
+        // ==========================================
+        function calculateStoryHealth(story) {
+            const unconsumedConfrontations = (story.characters || []).filter(c => !c.confrontationUsed).length;
+            const unresolvedIronies = (story.relationships || []).filter(r => !r.resolved).length;
+            
+            const episodes = story.episodes || [];
+            const last3 = episodes.slice(-3);
+            const emptyHooks = last3.filter(e => !e.hook || !e.hook.trim()).length;
+            
+            const innerFilledCount = episodes.filter(e => e.innerChange && e.innerChange.trim()).length;
+            const innerRatio = episodes.length > 0 ? Math.round((innerFilledCount / episodes.length) * 100) : 0;
+
+            // A-3 메인 스토리라인 7칸 검사
+            const mainlineKeys = ['want', 'need', 'goal', 'penalty', 'antagonist', 'ending', 'summary'];
+            let emptyMainline = 0;
+            if (story.mainline) {
+                mainlineKeys.forEach(k => {
+                    if (!story.mainline[k] || !story.mainline[k].trim()) emptyMainline++;
+                });
+            } else {
+                emptyMainline = 7;
+            }
+
+            return {
+                unconsumedConfrontations,
+                unresolvedIronies,
+                emptyHooks,
+                innerRatio,
+                emptyMainline
+            };
+        }
+
+        function renderStories() {
+            const list = document.getElementById('story-list');
+            list.innerHTML = '';
+
+            if (state.stories.length === 0) {
+                list.innerHTML = `
+                    <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                        아직 등록된 이야기가 없습니다.<br>오른쪽 상단이나 + 버튼으로 새 이야기를 만들어보세요!
+                    </div>
+                `;
+                return;
+            }
+
+            state.stories.forEach(story => {
+                const health = calculateStoryHealth(story);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.cursor = 'pointer';
+                card.onclick = () => viewStoryDetail(story.id);
+
+                card.innerHTML = `
+                    <div class="card-title">
+                        <span>${escapeHtml(story.title)}</span>
+                        <span class="tag">${escapeHtml(story.status)}</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">
+                        ${escapeHtml(story.logline) || '로그라인이 아직 없습니다.'}
+                    </div>
+                    ${story.theme ? `<div style="font-size: 0.8rem; margin-bottom: 8px; color: var(--primary-dark);">🎯 <strong>테마:</strong> ${escapeHtml(story.theme)}</div>` : ''}
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; font-size: 0.75rem; margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+                        <span class="tag">인물 ${story.characters.length}명</span>
+                        <span class="tag">회차 ${story.episodes.length}화</span>
+                        <span class="tag" style="background:${health.emptyMainline > 0 ? '#fef3c7' : '#ecfdf5'}; color:${health.emptyMainline > 0 ? '#92400e' : '#15803d'};">
+                            스토리라인 미완성: ${health.emptyMainline}칸
+                        </span>
+                        <span class="tag" style="background:${health.unconsumedConfrontations > 0 ? '#fef3c7' : '#ecfdf5'}; color:${health.unconsumedConfrontations > 0 ? '#b45309' : '#15803d'};">
+                            대면 미소모: ${health.unconsumedConfrontations}
+                        </span>
+                        <span class="tag" style="background:${health.emptyHooks > 0 ? '#fee2e2' : '#f1f5f9'}; color:${health.emptyHooks > 0 ? '#b91c1c' : '#475569'};">
+                            최근 훅 누락: ${health.emptyHooks}
+                        </span>
+                        <span class="tag">내적변화: ${health.innerRatio}%</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // 스토리 상세 모달 열기 (A-1, A-2, A-3 통합)
+        function viewStoryDetail(id, subTab = currentStorySubTab || 'foundation') {
+            currentStoryId = id;
+            currentStorySubTab = subTab;
+            const s = state.stories.find(x => x.id == id);
+            if (!s) return;
+            migrateStory(s);
+
+            const health = calculateStoryHealth(s);
+
+            const bodyHtml = `
+                <!-- 서사 정합성 체크리스트 (A-3 스토리라인 미완성 포함) -->
+                <div class="sub-card" style="background:#eef2ff; border-color:#c7d2fe; margin-bottom:14px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <strong style="font-size:0.85rem; color:var(--primary-dark);">📊 서사 정합성 체크리스트</strong>
+                        <span class="tag" style="background:white;">${escapeHtml(s.status)}</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.75rem;">
+                        <div>• 스토리라인 미완성: <strong style="color:${health.emptyMainline > 0 ? 'var(--secondary)' : 'inherit'}">${health.emptyMainline}칸</strong></div>
+                        <div>• 미소모 대면 카드: <strong>${health.unconsumedConfrontations}개</strong></div>
+                        <div>• 미해결 관계 모순: <strong>${health.unresolvedIronies}개</strong></div>
+                        <div>• 최근 3화 훅 누락: <strong style="color:${health.emptyHooks > 0 ? 'var(--danger)' : 'inherit'}">${health.emptyHooks}건</strong></div>
+                        <div>• 내적변화 추적률: <strong>${health.innerRatio}%</strong></div>
+                    </div>
+                </div>
+
+                <!-- 단계형 서브 탭 3개 -->
+                <div class="sub-nav">
+                    <button class="sub-nav-btn ${subTab === 'foundation' ? 'active' : ''}" onclick="switchStorySubView(${s.id}, 'foundation')">1. 토대 (테마·인물)</button>
+                    <button class="sub-nav-btn ${subTab === 'arc' ? 'active' : ''}" onclick="switchStorySubView(${s.id}, 'arc')">2. 메인 아크</button>
+                    <button class="sub-nav-btn ${subTab === 'episodes' ? 'active' : ''}" onclick="switchStorySubView(${s.id}, 'episodes')">3. 회차 (${s.episodes.length})</button>
+                </div>
+
+                <!-- 서브 탭 콘텐츠 영역 -->
+                <div id="story-subview-content">
+                    ${renderStorySubTabContent(s, subTab)}
+                </div>
+
+                <div style="margin-top:20px; padding-top:10px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn btn-ghost btn-small" style="color:var(--danger)" onclick="deleteStory(${s.id})">이 이야기 삭제</button>
+                    <span style="font-size:0.72rem; color:var(--text-muted)">입력 즉시 임시 반영되며 창을 닫을 때 안전하게 저장됩니다</span>
+                </div>
+            `;
+
+            openModal(`📖 ${s.title}`, bodyHtml, () => {
+                saveImmediately();
+                renderStories();
+                renderHome();
+                closeModal();
+            });
+            autoResizeAllTextareas();
+        }
+
+        // 서브 탭 전환 (스크롤 위치 유지 및 모달 재렌더 방지)
+        function switchStorySubView(storyId, tab) {
+            currentStorySubTab = tab;
+            const content = document.getElementById('story-subview-content');
+            const s = state.stories.find(x => x.id == storyId);
+            if (!content || !s) return;
+
+            // 서브탭 버튼 활성화 변경 (모달 안의 버튼만 대상으로 함)
+            document.querySelectorAll('#modal-container .sub-nav-btn').forEach((btn, idx) => {
+                const tabs = ['foundation', 'arc', 'episodes'];
+                btn.classList.toggle('active', tabs[idx] === tab);
+            });
+
+            content.innerHTML = renderStorySubTabContent(s, tab);
+            autoResizeAllTextareas(content);
+        }
+
+        // 부분 다시 그리기 헬퍼: 캐릭터/관계/아크/회차 추가·삭제 시 스크롤 위치 유지 (A-2)
+        function refreshStoryModalWithScroll() {
+            const modalContent = document.querySelector('.modal-content');
+            const scrollPos = modalContent ? modalContent.scrollTop : 0;
+            if (currentStoryId) {
+                viewStoryDetail(currentStoryId, currentStorySubTab);
+                if (modalContent) {
+                    requestAnimationFrame(() => {
+                        modalContent.scrollTop = scrollPos;
+                    });
+                }
+            }
+        }
+
+        function renderStorySubTabContent(s, tab) {
+            if (tab === 'foundation') {
+                return `
+                    <div style="margin-bottom:15px;">
+                        <label>작품 제목</label>
+                        <input type="text" value="${escapeHtml(s.title)}" oninput="updateStoryField(${s.id}, 'title', this.value)">
+                        
+                        <label>진행 상태</label>
+                        <select onchange="updateStoryField(${s.id}, 'status', this.value)">
+                            <option ${s.status === '구상 중' ? 'selected' : ''}>구상 중</option>
+                            <option ${s.status === '집필 중' ? 'selected' : ''}>집필 중</option>
+                            <option ${s.status === '완결' ? 'selected' : ''}>완결</option>
+                        </select>
+
+                        <label>한 줄 로그라인</label>
+                        <input type="text" value="${escapeHtml(s.logline || '')}" placeholder="어떤 주인공이 무엇을 극복하고 성취하는가" oninput="updateStoryField(${s.id}, 'logline', this.value)">
+
+                        <label>메인 테마 (핵심 질문 및 메시지)</label>
+                        <input type="text" value="${escapeHtml(s.theme || '')}" placeholder="예: 구원은 타인이 아닌 자신의 선택에서 시작된다" oninput="updateStoryField(${s.id}, 'theme', this.value)">
+
+                        <label>독자 로망 정의</label>
+                        <input type="text" value="${escapeHtml(s.fantasy || '')}" placeholder="예: 평범했던 소년이 모두에게 인정받는 최고의 전략가가 되는 카타르시스" oninput="updateStoryField(${s.id}, 'fantasy', this.value)">
+
+                        <label>줄거리 요약</label>
+                        <textarea rows="3" placeholder="전체 줄거리 흐름 요약" oninput="updateStoryField(${s.id}, 'plot', this.value)">${escapeHtml(s.plot || '')}</textarea>
+                    </div>
+
+                    <!-- 캐릭터 목록 -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:8px;">
+                        <h4 style="margin:0; font-size:1rem;">👤 캐릭터 프로필 & 대면 카드</h4>
+                        <button class="btn btn-ghost btn-small" onclick="addCharacter(${s.id})">+ 인물 추가</button>
+                    </div>
+
+                    <div id="character-list">
+                        ${s.characters.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:8px 0;">등록된 캐릭터가 없습니다.</div>' : ''}
+                        ${s.characters.map((c, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>#${idx + 1} 인물</strong>
+                                    <button class="btn btn-ghost btn-small" onclick="removeCharacter(${s.id}, ${c.id})">🗑️</button>
+                                </div>
+                                <label>이름</label>
+                                <input type="text" value="${escapeHtml(c.name || '')}" placeholder="캐릭터 이름" oninput="updateCharacterField(${s.id}, ${c.id}, 'name', this.value)">
+                                
+                                <label>캐릭터 모순 (갭모에 / 결핍 / 트라우마)</label>
+                                <input type="text" value="${escapeHtml(c.contradiction || '')}" placeholder="예: 무자비한 암살자이지만 어린아이의 울음소리엔 손이 떨린다" oninput="updateCharacterField(${s.id}, ${c.id}, 'contradiction', this.value)">
+                                
+                                <label>가장 피하고 싶어하는 것 (회피/의존 정체성)</label>
+                                <input type="text" value="${escapeHtml(c.avoidance || '')}" placeholder="예: 남과의 충돌, 타인에게 미움받는 것" oninput="updateCharacterField(${s.id}, ${c.id}, 'avoidance', this.value)">
+                                
+                                <label style="color:var(--accent);">→ 반드시 대면해야 할 상황 (대면 카드)</label>
+                                <textarea rows="2" placeholder="예: 가장 소중한 친구를 지키기 위해 정면으로 싸워야만 하는 극한의 순간" oninput="updateCharacterField(${s.id}, ${c.id}, 'confrontation', this.value)">${escapeHtml(c.confrontation || '')}</textarea>
+
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; background:white; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    <span style="font-size:0.8rem;">대면 카드 소모 여부</span>
+                                    <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                        <input type="checkbox" style="width:auto; margin:0;" ${c.confrontationUsed ? 'checked' : ''} onchange="updateCharacterField(${s.id}, ${c.id}, 'confrontationUsed', this.checked)">
+                                        <span class="tag" style="background:${c.confrontationUsed ? '#dcfce7' : '#fee2e2'}; color:${c.confrontationUsed ? '#166534' : '#991b1b'};">
+                                            ${c.confrontationUsed ? '소모 완료 (각성/변화)' : '미소모 (온존)'}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 관계 목록 -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; margin-bottom:8px;">
+                        <h4 style="margin:0; font-size:1rem;">🔗 인물 관계 & 모순적 아이러니</h4>
+                        <button class="btn btn-ghost btn-small" onclick="addRelationship(${s.id})">+ 관계 추가</button>
+                    </div>
+
+                    <div id="relationship-list">
+                        ${s.relationships.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:8px 0;">등록된 관계가 없습니다.</div>' : ''}
+                        ${s.relationships.map((r, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>관계 #${idx + 1}</strong>
+                                    <button class="btn btn-ghost btn-small" onclick="removeRelationship(${s.id}, ${r.id})">🗑️</button>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>인물 A</label>
+                                        <select onchange="updateRelationshipField(${s.id}, ${r.id}, 'characterAId', this.value)">
+                                            <option value="">선택</option>
+                                            ${s.characters.map(c => `<option value="${c.id}" ${r.characterAId == c.id ? 'selected' : ''}>${escapeHtml(c.name || '미정')}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>인물 B</label>
+                                        <select onchange="updateRelationshipField(${s.id}, ${r.id}, 'characterBId', this.value)">
+                                            <option value="">선택</option>
+                                            ${s.characters.map(c => `<option value="${c.id}" ${r.characterBId == c.id ? 'selected' : ''}>${escapeHtml(c.name || '미정')}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <label>관계 설명</label>
+                                <input type="text" value="${escapeHtml(r.description || '')}" placeholder="예: 오랜 스승과 제자, 애증의 라이벌" oninput="updateRelationshipField(${s.id}, ${r.id}, 'description', this.value)">
+
+                                <label style="color:var(--accent);">발동될 치명적 모순 (아이러니)</label>
+                                <textarea rows="2" placeholder="예: 제자가 스승의 뜻을 이루기 위해 반드시 스승을 베어야 함" oninput="updateRelationshipField(${s.id}, ${r.id}, 'irony', this.value)">${escapeHtml(r.irony || '')}</textarea>
+
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; background:white; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    <span style="font-size:0.8rem;">아이러니 발동/해소 여부</span>
+                                    <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                        <input type="checkbox" style="width:auto; margin:0;" ${r.resolved ? 'checked' : ''} onchange="updateRelationshipField(${s.id}, ${r.id}, 'resolved', this.checked)">
+                                        <span class="tag" style="background:${r.resolved ? '#dcfce7' : '#fef3c7'}; color:${r.resolved ? '#166534' : '#92400e'};">
+                                            ${r.resolved ? '발동/해소됨' : '미발동'}
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (tab === 'arc') {
+                // A-3 메인 스토리라인 7칸 및 진행률 계산
+                const m = s.mainline || {};
+                const keys = ['want', 'need', 'goal', 'penalty', 'antagonist', 'ending', 'summary'];
+                const filledCount = keys.filter(k => m[k] && m[k].trim()).length;
+                const progressPct = Math.round((filledCount / 7) * 100);
+
+                return `
+                    <!-- A-3 메인 스토리라인 섹션 -->
+                    <div class="sub-card" style="background:#fdf4ff; border-color:#f5d0fe; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="color:#86198f; font-size:1rem;">🏛️ 메인 스토리라인</strong>
+                            <span class="tag" style="background:white; color:#86198f;">진행률: ${filledCount} / 7칸 (${progressPct}%)</span>
+                        </div>
+                        <p style="font-size:0.75rem; color:#701a75; margin:6px 0 4px 0;">
+                            💡 안내: 메인 스토리라인은 <strong>① 욕망과 필요 → ② 목표와 대가 → ③ 결말 → ④ 전환점</strong> 순서로 채우면 뼈대가 잡힙니다.
+                        </p>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width:${progressPct}%; background:#c026d3;"></div>
+                        </div>
+
+                        <!-- 1. Want -->
+                        <div style="margin-top:10px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label style="margin:0;">1. 주인공이 겉으로 원하는 것 (Want / 욕망)</label>
+                            </div>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>주인공이 초반에 자신이 원한다고 굳게 믿는 가짜 목표나 피상적 욕망입니다.<br><strong>예시:</strong> "친구들에게 인정받는 전략가가 되고 싶다", "무조건 많은 돈을 벌어 복수하겠다"</p>
+                            </details>
+                            <textarea rows="2" placeholder="겉으로 드러난 욕망" oninput="updateMainlineField(${s.id}, 'want', this.value)">${escapeHtml(m.want || '')}</textarea>
+                        </div>
+
+                        <!-- 2. Need -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">2. 주인공에게 진짜 필요한 것 (Need / 결핍)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>성장하기 위해 버려야 할 환상이자 진정한 내면의 깨달음입니다. Want와 충돌합니다.<br><strong>예시:</strong> "남의 인정 없이도 자기 판단을 믿는 것", "증오를 내려놓고 곁에 남은 사람들을 지키는 것"</p>
+                            </details>
+                            <textarea rows="2" placeholder="주인공 내면의 진짜 결핍과 진실" oninput="updateMainlineField(${s.id}, 'need', this.value)">${escapeHtml(m.need || '')}</textarea>
+                        </div>
+
+                        <!-- 3. Goal -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">3. 이야기 전체의 최종 목표 (Story Goal)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>이야기 외적으로 명확히 성패가 판가름 나는 물리적 퀘스트 목표입니다.<br><strong>예시:</strong> "마왕군 총사령관의 요새를 함락시키고 국경을 방어하는 것"</p>
+                            </details>
+                            <textarea rows="2" placeholder="외적 승리 조건" oninput="updateMainlineField(${s.id}, 'goal', this.value)">${escapeHtml(m.goal || '')}</textarea>
+                        </div>
+
+                        <!-- 4. Penalty -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">4. 실패 시 치르는 대가 (Stakes / Penalty)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>목표 달성에 실패했을 때 주인공과 세계가 겪을 끔찍한 파국입니다.<br><strong>예시:</strong> "소꿉친구와 부대원 전원이 몰살당하고 나라는 멸망한다"</p>
+                            </details>
+                            <textarea rows="2" placeholder="실패했을 때의 치명적 대가" oninput="updateMainlineField(${s.id}, 'penalty', this.value)">${escapeHtml(m.penalty || '')}</textarea>
+                        </div>
+
+                        <!-- 5. Antagonist -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">5. 최종 장애물 / 대립 세력 (Antagonist)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>주인공의 결핍(Need)을 정면으로 후벼파며 목표를 방해하는 적대자나 거대한 시스템입니다.<br><strong>예시:</strong> "주인공의 옛 스승이자, 동료를 버려서라도 이기라고 강요하는 적국 대장군"</p>
+                            </details>
+                            <textarea rows="2" placeholder="최종 빌런 및 주요 장애물" oninput="updateMainlineField(${s.id}, 'antagonist', this.value)">${escapeHtml(m.antagonist || '')}</textarea>
+                        </div>
+
+                        <!-- 6. Ending -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">6. 결말에서 주인공의 변화 (Ending / 결말부터 정하기)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>이야기 시작 시점과 비교했을 때 주인공의 가치관과 태도가 어떻게 달라져 있는가?<br><strong>예시:</strong> "타인의 칭찬에 연연하지 않고, 실패의 무게를 담담히 감당하는 진정한 사령관으로 거듭난다"</p>
+                            </details>
+                            <textarea rows="2" placeholder="시작과 완전히 달라진 주인공의 모습" oninput="updateMainlineField(${s.id}, 'ending', this.value)">${escapeHtml(m.ending || '')}</textarea>
+                        </div>
+
+                        <!-- 7. Summary -->
+                        <div style="margin-top:6px;">
+                            <label style="margin:0;">7. 메인 스토리라인 한 문단 요약 (Logline Extension)</label>
+                            <details class="guide-box">
+                                <summary>💡 어떻게 쓰나요?</summary>
+                                <p>위 1~6번 항목을 하나의 유기적인 문단으로 엮어 쓴 전체 서사의 축약본입니다.<br><strong>예시:</strong> "[주인공]은 [Want]를 좇지만 [Antagonist]에 막혀 [Penalty]의 위기에 처한다. 하지만 [Need]를 깨닫고 결단을 내려 마침내 [Goal]을 이루며 [Ending]으로 도약한다."</p>
+                            </details>
+                            <textarea rows="3" placeholder="위 항목들을 이어 쓴 한 문단 뼈대" oninput="updateMainlineField(${s.id}, 'summary', this.value)">${escapeHtml(m.summary || '')}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- 전환점 섹션 및 기본 틀 불러오기 (A-3) -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h4 style="margin:0; font-size:1rem;">📜 전환점 & 정보 공개 사다리</h4>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn btn-ghost btn-small" onclick="loadDefaultArcPoints(${s.id})">⚡ 기승전결 기본 틀 불러오기</button>
+                            <button class="btn btn-ghost btn-small" onclick="addArcPoint(${s.id})">+ 전환점</button>
+                        </div>
+                    </div>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:14px;">
+                        독자의 기대를 <strong>예측가능 → 예측붕괴 → 재해석</strong>으로 이끌고, 캐릭터의 대면 카드를 적재적소에 배치하세요.
+                    </p>
+
+                    <div id="arc-point-list">
+                        ${s.arcPoints.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">등록된 전환점이 없습니다. "기승전결 기본 틀 불러오기" 버튼을 눌러보세요!</div>' : ''}
+                        ${s.arcPoints.map((arc, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <span class="tag" style="background:var(--primary); color:white;">#${idx + 1} ${escapeHtml(arc.label || '전환점')}</span>
+                                    <button class="btn btn-ghost btn-small" onclick="removeArcPoint(${s.id}, ${arc.id})">🗑️</button>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>구간 라벨</label>
+                                        <input type="text" value="${escapeHtml(arc.label || '')}" placeholder="예: 발단 사건 / 클라이맥스" oninput="updateArcPointField(${s.id}, ${arc.id}, 'label', this.value)">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>정보 공개 단계</label>
+                                        <select onchange="updateArcPointField(${s.id}, ${arc.id}, 'infoStage', this.value)">
+                                            <option ${arc.infoStage === '예측가능' ? 'selected' : ''}>예측가능</option>
+                                            <option ${arc.infoStage === '예측붕괴' ? 'selected' : ''}>예측붕괴</option>
+                                            <option ${arc.infoStage === '재해석' ? 'selected' : ''}>재해석</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <label>이 지점에서 일어나는 사건</label>
+                                <textarea rows="2" placeholder="독자의 예상을 뒤흔들고 전개를 꺾는 핵심 사건을 구체적으로 적으세요" oninput="updateArcPointField(${s.id}, ${arc.id}, 'note', this.value)">${escapeHtml(arc.note || '')}</textarea>
+
+                                <label>연계 캐릭터 대면 카드</label>
+                                <select onchange="updateArcPointField(${s.id}, ${arc.id}, 'linkedConfrontationCharacterId', this.value)">
+                                    <option value="">연계 대면 카드 없음</option>
+                                    ${s.characters.map(c => `
+                                        <option value="${c.id}" ${arc.linkedConfrontationCharacterId == c.id ? 'selected' : ''}>
+                                            ${escapeHtml(c.name)}: ${escapeHtml(c.confrontation ? c.confrontation.substring(0, 20) + '...' : '대면 카드')}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (tab === 'episodes') {
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0; font-size:1rem;">🎬 회차별 템플릿 목록 (${s.episodes.length}화)</h4>
+                        <button class="btn btn-primary btn-small" onclick="addEpisodeItem(${s.id})">+ 회차 추가</button>
+                    </div>
+
+                    <div id="episodes-container">
+                        ${s.episodes.length === 0 ? '<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">에피소드가 없습니다. 첫 회차를 추가해 글을 전개해 보세요!</div>' : ''}
+                        ${s.episodes.map((ep, idx) => `
+                            <div class="sub-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <strong>제 ${idx + 1}화</strong>
+                                    <button class="btn btn-ghost btn-small" onclick="removeEpisodeItem(${s.id}, ${ep.id})">🗑️</button>
+                                </div>
+
+                                <label>소제목</label>
+                                <input type="text" value="${escapeHtml(ep.title || '')}" placeholder="회차 제목" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'title', this.value)">
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>이번 화 목표</label>
+                                        <input type="text" value="${escapeHtml(ep.goal || '')}" placeholder="주인공의 즉각적 목표" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'goal', this.value)">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>실패 시 패널티</label>
+                                        <input type="text" value="${escapeHtml(ep.penalty || '')}" placeholder="놓칠 경우 치를 대가" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'penalty', this.value)">
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>봉착한 문제</label>
+                                        <textarea rows="2" placeholder="작은 갈등과 장애물" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'problem', this.value)">${escapeHtml(ep.problem || '')}</textarea>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>해결 (캐릭터성 반영)</label>
+                                        <textarea rows="2" placeholder="캐릭터만의 방식으로 돌파" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'solution', this.value)">${escapeHtml(ep.solution || '')}</textarea>
+                                    </div>
+                                </div>
+
+                                <label>내적 변화 (이 해결이 심리에 미친 영향)</label>
+                                <input type="text" value="${escapeHtml(ep.innerChange || '')}" placeholder="가치관의 균열, 자각 등" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'innerChange', this.value)">
+
+                                <label>관계 변화</label>
+                                <input type="text" value="${escapeHtml(ep.relationshipChange || '')}" placeholder="인물 간 신뢰도, 거리감 변화" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'relationshipChange', this.value)">
+
+                                <label>옳은 선택 (역경 속 결단)</label>
+                                <input type="text" value="${escapeHtml(ep.rightChoice || '')}" placeholder="손해를 감수하고도 내린 올바른 결정" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'rightChoice', this.value)">
+
+                                <label style="color:var(--accent);">마무리 훅 (다음 화를 누르게 할 미해결 질문)</label>
+                                <input type="text" value="${escapeHtml(ep.hook || '')}" placeholder="예: 방 한구석에서 발견된 피 묻은 편지의 정체는?" oninput="updateEpisodeField(${s.id}, ${ep.id}, 'hook', this.value)">
+
+                                <div style="display:flex; gap:8px;">
+                                    <div style="flex:1;">
+                                        <label>정보공개 사다리</label>
+                                        <select onchange="updateEpisodeField(${s.id}, ${ep.id}, 'infoStage', this.value)">
+                                            <option value="예측가능" ${ep.infoStage === '예측가능' ? 'selected' : ''}>예측가능</option>
+                                            <option value="예측붕괴" ${ep.infoStage === '예측붕괴' ? 'selected' : ''}>예측붕괴</option>
+                                            <option value="재해석" ${ep.infoStage === '재해석' ? 'selected' : ''}>재해석</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>발동된 대면 카드</label>
+                                        <select onchange="updateEpisodeConfrontation(${s.id}, ${ep.id}, this.value)">
+                                            <option value="">선택 안 함</option>
+                                            ${s.characters.map(c => `
+                                                <option value="${c.id}" ${ep.confrontationCharacterId == c.id ? 'selected' : ''}>
+                                                    ${escapeHtml(c.name)}의 대면
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // --- 입력값 디바운스 업데이트 핸들러 (A-2) ---
+        function updateStoryField(id, field, val) {
+            const s = state.stories.find(x => x.id == id);
+            if (!s) return;
+            s[field] = val;
+            saveDebounced();
+        }
+
+        function updateMainlineField(storyId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            if (!s.mainline) s.mainline = {};
+            s.mainline[field] = val;
+            saveDebounced();
+        }
+
+        function updateCharacterField(storyId, charId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const c = s.characters.find(item => item.id == charId);
+            if (!c) return;
+            c[field] = val;
+            saveDebounced();
+        }
+
+        function updateRelationshipField(storyId, relId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const r = s.relationships.find(item => item.id == relId);
+            if (!r) return;
+            r[field] = val;
+            saveDebounced();
+        }
+
+        function updateArcPointField(storyId, arcId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const a = s.arcPoints.find(item => item.id == arcId);
+            if (!a) return;
+            a[field] = val;
+            saveDebounced();
+        }
+
+        function updateEpisodeField(storyId, epId, field, val) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const ep = s.episodes.find(item => item.id == epId);
+            if (!ep) return;
+            ep[field] = val;
+            saveDebounced();
+        }
+
+        function updateEpisodeConfrontation(storyId, epId, charId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            const ep = s.episodes.find(item => item.id == epId);
+            if (!ep) return;
+            ep.confrontationCharacterId = charId || null;
+
+            if (charId) {
+                const c = s.characters.find(item => item.id == charId);
+                if (c) {
+                    c.confrontationUsed = true;
+                    c.confrontationEpisodeIdx = s.episodes.indexOf(ep) + 1;
+                }
+            }
+            saveDebounced();
+        }
+
+        // --- 구조 변경 (추가/삭제) 핸들러 ---
+        function addCharacter(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.characters.push({
+                id: Date.now(),
+                name: "",
+                contradiction: "",
+                avoidance: "",
+                confrontation: "",
+                confrontationUsed: false,
+                confrontationEpisodeIdx: null
+            });
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function removeCharacter(storyId, charId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.characters = s.characters.filter(c => c.id != charId);
+            s.relationships = s.relationships.filter(r => r.characterAId != charId && r.characterBId != charId);
+            s.episodes.forEach(ep => {
+                if (ep.confrontationCharacterId == charId) ep.confrontationCharacterId = null;
+            });
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function addRelationship(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.relationships.push({
+                id: Date.now(),
+                characterAId: s.characters[0] ? s.characters[0].id : null,
+                characterBId: s.characters[1] ? s.characters[1].id : null,
+                description: "",
+                irony: "",
+                resolved: false
+            });
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function removeRelationship(storyId, relId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.relationships = s.relationships.filter(r => r.id != relId);
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function addArcPoint(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.arcPoints.push({
+                id: Date.now(),
+                label: "전환점",
+                infoStage: "예측붕괴",
+                note: "",
+                linkedConfrontationCharacterId: null
+            });
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        // A-3 기승전결 기본 틀 7개 전환점 불러오기
+        function loadDefaultArcPoints(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            if (s.arcPoints.length > 0) {
+                if (!confirm("기존 전환점을 교체하고 7개 기본 틀(기승전결)을 불러오시겠습니까?")) return;
+            }
+            const defaults = [
+                { label: "1. 발단 사건 (일상이 깨지는 순간)", infoStage: "예측가능" },
+                { label: "2. 1막 끝 (되돌아갈 수 없는 선택)", infoStage: "예측가능" },
+                { label: "3. 전개 중반의 시험", infoStage: "예측가능" },
+                { label: "4. 중간점 (판이 뒤집히는 순간)", infoStage: "예측붕괴" },
+                { label: "5. 최저점 (다 잃었다고 느끼는 순간)", infoStage: "예측붕괴" },
+                { label: "6. 클라이맥스 (최종 대결, 대면 카드 발동)", infoStage: "재해석" },
+                { label: "7. 결말 (변화된 주인공)", infoStage: "재해석" }
+            ];
+
+            s.arcPoints = defaults.map((d, idx) => ({
+                id: Date.now() + idx,
+                label: d.label,
+                infoStage: d.infoStage,
+                note: "",
+                linkedConfrontationCharacterId: null
+            }));
+
+            saveImmediately();
+            refreshStoryModalWithScroll();
+            showToast("기승전결 7대 전환점 틀이 생성되었습니다.");
+        }
+
+        function removeArcPoint(storyId, arcId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.arcPoints = s.arcPoints.filter(a => a.id != arcId);
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function addEpisodeItem(storyId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.episodes.push({
+                id: Date.now(),
+                title: `제 ${s.episodes.length + 1}화`,
+                goal: "",
+                penalty: "",
+                problem: "",
+                solution: "",
+                innerChange: "",
+                relationshipChange: "",
+                rightChoice: "",
+                hook: "",
+                infoStage: "예측가능",
+                confrontationCharacterId: null
+            });
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function removeEpisodeItem(storyId, epId) {
+            const s = state.stories.find(x => x.id == storyId);
+            if (!s) return;
+            s.episodes = s.episodes.filter(ep => ep.id != epId);
+            saveImmediately();
+            refreshStoryModalWithScroll();
+        }
+
+        function openNewStoryModal() {
+            openModal('새 이야기 만들기', `
+                <label>이야기 제목</label>
+                <input type="text" id="s-title" placeholder="작품 제목">
+                <label>한 줄 로그라인</label>
+                <input type="text" id="s-logline" placeholder="주인공이 마주한 결핍과 목표">
+                <label>메인 테마 / 독자 로망</label>
+                <input type="text" id="s-theme" placeholder="예: 구원과 성장 / 최고의 전문가가 되는 쾌감">
+                <label>전체 줄거리 요약</label>
+                <textarea id="s-plot" placeholder="전체 줄거리 요약" rows="3"></textarea>
+            `, saveNewStory);
+        }
+
+        function saveNewStory() {
+            const titleInput = document.getElementById('s-title');
+            if (!titleInput.value.trim()) {
+                alert("제목을 입력해 주세요.");
+                return;
+            }
+            const s = {
+                id: Date.now(),
+                title: titleInput.value.trim(),
+                logline: document.getElementById('s-logline').value.trim(),
+                theme: document.getElementById('s-theme').value.trim(),
+                fantasy: "",
+                plot: document.getElementById('s-plot').value.trim(),
+                status: '구상 중',
+                mainline: {
+                    want: "",
+                    need: "",
+                    goal: "",
+                    penalty: "",
+                    antagonist: "",
+                    ending: "",
+                    summary: ""
+                },
+                characters: [],
+                relationships: [],
+                arcPoints: [],
+                episodes: []
+            };
+            state.stories.push(s);
+            saveImmediately();
+            renderStories();
+            renderHome();
+            closeModal();
+            viewStoryDetail(s.id, 'foundation');
+        }
+
+        function deleteStory(id) {
+            if(confirm('이야기를 삭제하면 복구할 수 없습니다. 계속하시겠습니까?')) {
+                state.stories = state.stories.filter(s => s.id != id);
+                saveImmediately();
+                renderStories();
+                renderHome();
+                closeModal();
+            }
+        }
+
+        // ==========================================
+        //  FAB 버튼 및 공통 핸들러
+        // ==========================================
+        function handleFab() {
+            if (currentTab === 'quests') {
+                openModal('새 퀘스트 추가', `
+                    <input type="text" id="q-title" placeholder="퀘스트 제목">
+                    <textarea id="q-desc" placeholder="상세 내용"></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <select id="q-grade" style="flex:1">
+                            <option value="A">A급 (고보상)</option>
+                            <option value="B" selected>B급 (보통)</option>
+                            <option value="C">C급 (저보상)</option>
+                        </select>
+                        <select id="q-cat" style="flex:1">
+                            ${state.categories.map(c => `<option>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:6px;">
+                        <input type="checkbox" id="q-daily" style="width:auto; margin:0;"> 데일리 퀘스트 (매일 반복)
+                    </label>
+                `, saveQuest);
+            } else if (currentTab === 'ideas') {
+                // 연구소 서브탭에 맞는 모달 분기
+                if (currentLabSubTab === 'otk') {
+                    if (currentOtkMode === 'pred') openNewOtkPredModal();
+                    else openNewOtkWowModal();
+                } else if (currentLabSubTab === 'life') {
+                    openNewLifeStoryModal();
+                } else {
+                    // 일반 아이디어
+                    openModal('💡 새 아이디어 기록', `
+                        <textarea id="i-content" placeholder="아이디어를 자유롭게 적으세요..." rows="5"></textarea>
+                        <input type="text" id="i-tags" placeholder="태그 (쉼표로 구분)">
+                        <select id="i-project">
+                            <option value="">연결할 이야기 선택 (선택 안 함)</option>
+                            ${state.stories.map(s => `<option value="${s.id}">${escapeHtml(s.title)}</option>`).join('')}
+                        </select>
+                    `, saveIdea);
+                }
+            } else {
+                openNewStoryModal();
+            }
+        }
+
+        function saveQuest() {
+            const title = document.getElementById('q-title').value.trim();
+            if(!title) return;
+            const q = {
+                id: Date.now(),
+                title: title,
+                desc: document.getElementById('q-desc').value,
+                grade: document.getElementById('q-grade').value,
+                category: document.getElementById('q-cat').value,
+                isDaily: document.getElementById('q-daily').checked,
+                completedAt: null
+            };
+            state.quests.push(q);
+            saveImmediately();
+            renderQuests();
+            closeModal();
+        }
+
+        function saveIdea() {
+            const content = document.getElementById('i-content').value.trim();
+            if(!content) return;
+            const i = {
+                id: Date.now(),
+                content: content,
+                tags: document.getElementById('i-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+                projectId: document.getElementById('i-project').value
+            };
+            state.ideas.push(i);
+            saveImmediately();
+            renderIdeas();
+            closeModal();
+        }
+
+        function openRewardSettings() {
+            openModal('등급별 보상 설정', `
+                <p style="font-size:0.8rem; color:var(--text-muted);">등급별로 획득할 XP와 골드를 설정합니다.</p>
+                ${['A', 'B', 'C'].map(g => `
+                    <div class="reward-set">
+                        <strong>${g}등급:</strong>
+                        XP <input type="number" id="reward-${g}-xp" value="${state.rewardConfig[g].xp}" style="width:75px; margin:0">
+                        Gold <input type="number" id="reward-${g}-gold" value="${state.rewardConfig[g].gold}" style="width:75px; margin:0">
+                    </div>
+                `).join('')}
+            `, () => {
+                ['A', 'B', 'C'].forEach(g => {
+                    state.rewardConfig[g].xp = parseInt(document.getElementById(`reward-${g}-xp`).value) || 0;
+                    state.rewardConfig[g].gold = parseInt(document.getElementById(`reward-${g}-gold`).value) || 0;
+                });
+                saveImmediately();
+                renderQuests();
+                closeModal();
+            });
+        }
+
+        // ==========================================
+        //  모달 제어 유틸리티
+        // ==========================================
+        function openModal(title, body, onSave) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = body;
+            const saveBtn = document.getElementById('modal-save-btn');
+            if (onSave) {
+                saveBtn.style.display = 'block';
+                saveBtn.onclick = onSave;
+            } else {
+                saveBtn.style.display = 'none';
+            }
+            document.getElementById('modal-container').classList.remove('hidden');
+            autoResizeAllTextareas(document.getElementById('modal-body'));
+        }
+
+        function closeModal() {
+            saveImmediately();
+            document.getElementById('modal-container').classList.add('hidden');
+            currentStoryId = null;
+            renderHome();
+            renderStories();
+        }
+
+        function handleModalBackdropClick(event) {
+            if (event.target.id === 'modal-container') {
+                closeModal();
+            }
+        }
+
+        // ==========================================
+        //  데이터 내보내기 및 가져오기 (C)
+        // ==========================================
+        function exportData() {
+            saveImmediately();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `writer_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast("데이터 백업 파일이 저장되었습니다.");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    state = imported;
+                    migrateAllData();
+                    saveImmediately();
+                    renderAll();
+                    showToast("데이터 복원이 완료되었습니다.");
+                } catch (err) {
+                    alert("잘못된 파일 형식이거나 손상된 백업 파일입니다.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // 앱 기동
+        init();
+    </script>
+</body>
+</html>
